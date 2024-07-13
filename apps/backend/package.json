@@ -1,0 +1,36 @@
+{
+  "name": "@gallery/backend",
+  "version": "1.0.50",
+  "exports": {
+    ".": "./src/exports.ts"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "bun run --watch src/index.ts",
+    "migrate": "drizzle-kit push"
+  },
+  "dependencies": {
+    "@bogeychan/elysia-logger": "^0.1.0",
+    "@elysiajs/bearer": "^1.0.2",
+    "@elysiajs/jwt": "^1.0.2",
+    "@elysiajs/swagger": "^1.0.5",
+    "@faker-js/faker": "^8.4.1",
+    "bcrypt": "^5.1.1",
+    "common": "workspace:*",
+    "drizzle-orm": "^0.32.0",
+    "drizzle-typebox": "^0.1.1",
+    "elysia": "latest",
+    "pg": "^8.12.0",
+    "pino-pretty": "^11.2.1",
+    "typebox": "^0.0.1"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/pg": "^8.11.6",
+    "bun-types": "latest",
+    "drizzle-kit": "^0.23.0",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "module": "src/index.js"
+}

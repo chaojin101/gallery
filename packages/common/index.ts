@@ -1,0 +1,2 @@
+export const PASSWORDMINLENGTH = 6;
+export const PASSWORDMAXLENGTH = 20;
