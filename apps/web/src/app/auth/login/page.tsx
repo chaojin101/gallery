@@ -45,7 +45,7 @@ export default function Page() {
     const result = await loginM.mutateAsync(data);
     console.log(result);
 
-    if (!result.data || result.data.base.success) {
+    if (!result.data || !result.data.base.success) {
       toast({
         title: "Something went wrong",
         description: result.data?.base.msg,
@@ -55,7 +55,7 @@ export default function Page() {
 
     setAuthToken(result.data.data.token);
 
-    router.back();
+    router.push("/");
   };
 
   return (
