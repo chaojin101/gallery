@@ -45,12 +45,15 @@ export default function Page() {
     const result = await loginM.mutateAsync(data);
     console.log(result);
 
-    if (!result.data?.base.success) {
-      toast({ title: result.data?.base.msg });
+    if (!result.data || result.data.base.success) {
+      toast({
+        title: "Something went wrong",
+        description: result.data?.base.msg,
+      });
       return;
     }
 
-    setAuthToken(result.data?.token);
+    setAuthToken(result.data.data.token);
 
     router.back();
   };

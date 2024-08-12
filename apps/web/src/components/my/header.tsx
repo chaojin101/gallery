@@ -3,6 +3,7 @@ import Link from "next/link";
 
 export const Header = () => {
   const { tokenPayload, logout } = useAuth();
+  console.log(`tokenPayload: ${tokenPayload}`);
 
   return (
     <header className="bg-header py-4 flex-col gap-4">
