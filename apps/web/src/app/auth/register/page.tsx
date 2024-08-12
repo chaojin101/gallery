@@ -46,16 +46,18 @@ export default function Page() {
       email: data.email,
       password: data.password,
     });
-    console.log(result);
 
-    if (!result.data?.base.success) {
-      toast({ title: result.data?.base.msg });
+    if (!result.data || !result.data.base.success) {
+      toast({
+        title: "Something went wrong",
+        description: result.data?.base.msg,
+      });
       return;
     }
 
-    setAuthToken(result.data?.token);
+    setAuthToken(result.data.data.token);
 
-    router.back();
+    router.push("/");
   };
 
   return (

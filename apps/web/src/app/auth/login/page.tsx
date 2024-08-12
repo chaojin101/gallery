@@ -43,7 +43,6 @@ export default function Page() {
 
   const onSubmit = async (data: LoginInputs) => {
     const result = await loginM.mutateAsync(data);
-    console.log(result);
 
     if (!result.data || !result.data.base.success) {
       toast({
