@@ -49,21 +49,15 @@ export class ImgService {
     });
   }
 
-  static async getImgByGalleryId(options: {
-    galleryId: string;
-    offset?: number;
-    limit?: number;
-  }) {
-    const { galleryId, offset = 0, limit = 10 } = options;
+  static async getImgByGalleryId(options: { galleryId: string }) {
+    const { galleryId } = options;
 
     const imgDBs = await defaultDb
       .select({ img })
       .from(img)
       .leftJoin(galleryImg, eq(img.id, galleryImg.imgId))
       .where(eq(galleryImg.galleryId, galleryId))
-      .orderBy(galleryImg.order)
-      .offset(offset)
-      .limit(limit);
+      .orderBy(galleryImg.order);
 
     return imgDBs.map((imgDB) => ({
       ...imgDB.img,

@@ -15,7 +15,7 @@ export const user = pgTable("user", {
   name: text("name").notNull().unique(),
   email: text("email").notNull().unique(),
   hashedPassword: text("hashedPassword").notNull(),
-  verified: boolean("verified").default(false),
+  verified: boolean("verified").notNull().default(false),
   createdAt: timestamp("createdAt", { withTimezone: true })
     .notNull()
     .defaultNow(),
@@ -120,7 +120,7 @@ export const galleryTagRelations = relations(galleryTag, ({ one, many }) => ({
 export const collection = pgTable("collection", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("userId").notNull(),
-  name: text("name").notNull(),
+  name: text("name").notNull().unique(),
   description: text("description").notNull(),
   createdAt: timestamp("createdAt", { withTimezone: true })
     .notNull()
@@ -130,6 +130,7 @@ export const collection = pgTable("collection", {
     .defaultNow(),
 });
 export type Collection = typeof collection.$inferSelect;
+export const collectionSchema = createSelectSchema(collection);
 
 export const collectionRelations = relations(collection, ({ one, many }) => ({
   user: one(user, {

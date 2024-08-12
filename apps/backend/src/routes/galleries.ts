@@ -1,26 +1,25 @@
 import { Value } from "@sinclair/typebox/value";
 import Elysia from "elysia";
-import { authPlugin } from "plugins";
-import { GalleryService } from "service/gallery";
-import { ImgService } from "service/img";
+import { authPlugin } from "../plugins";
+import { GalleryService } from "../service/gallery";
+import { ImgService } from "../service/img";
 import {
   addGalleryReqBodySchema,
   addGalleryRespBodySchema,
   appendImgGalleryRespBodySchema,
   appendImgToGalleryReqBodySchema,
-  getGalleryByIdReqQuerySchema,
   getGalleryByIdRespBodySchema,
   getLatestGalleriesReqQuerySchema,
   getLatestGalleriesRespBodySchema,
   MSG_GALLERY_NAME_EXIST,
   MSG_GALLERY_NOT_FOUND,
-} from "types/routes/galleries";
-import { authHeaderSchema, MSG_UNAUTHORIZED } from "types/routes/users";
+} from "../types/routes/galleries";
+import { authHeaderSchema, MSG_UNAUTHORIZED } from "../types/routes/users";
 
 export const galleriesRoute = new Elysia({ prefix: "/v1/galleries" })
   .get(
     "/:id",
-    async ({ params, query }) => {
+    async ({ params }) => {
       const resp = Value.Create(getGalleryByIdRespBodySchema);
 
       const gallery = await GalleryService.getGalleryById(params.id);
@@ -31,8 +30,6 @@ export const galleriesRoute = new Elysia({ prefix: "/v1/galleries" })
 
       const imgDBs = await ImgService.getImgByGalleryId({
         galleryId: params.id,
-        limit: query.limit,
-        offset: query.offset,
       });
 
       resp.base.success = true;
@@ -41,18 +38,18 @@ export const galleriesRoute = new Elysia({ prefix: "/v1/galleries" })
       return resp;
     },
     {
-      query: getGalleryByIdReqQuerySchema,
       response: getGalleryByIdRespBodySchema,
     }
   )
   .get(
     "/latest",
     async ({ query }) => {
+      const { limit = 10, page = 1 } = query;
       const resp = Value.Create(getLatestGalleriesRespBodySchema);
 
       const galleries = await GalleryService.getLatestGallery({
-        limit: query.limit,
-        offset: query.offset,
+        limit: limit,
+        offset: (page - 1) * limit,
       });
 
       resp.base.success = true;

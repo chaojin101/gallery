@@ -1,6 +1,17 @@
 import { faker } from "@faker-js/faker";
+import { defaultDb } from "db";
+import { user } from "db/schema";
+import { eq } from "drizzle-orm";
 import { SignReqSchema } from "exports";
 import { backend, decodeToken } from "test-tools";
+
+export class TestUserDBService {
+  static async getUserByEmail(email: string) {
+    return await defaultDb.query.user.findFirst({
+      where: eq(user.email, email),
+    });
+  }
+}
 
 export const randomEmail = () => faker.internet.email();
 
@@ -37,12 +48,31 @@ export const randomUser = async (
   const { data } = await apiAddUser({ email, password });
 
   const token = data?.token;
-  const payload = decodeToken(data?.token);
+  const payload = decodeToken(data?.token as string);
 
   return {
     id: payload.userId,
     email: payload.email,
     name: payload.name,
+    token: token as string,
+    payload,
+  };
+};
+
+export const randomUser1 = async (
+  options: {
+    email?: string;
+    password?: string;
+  } = {}
+) => {
+  const { email = randomEmail(), password = randomPassword() } = options;
+
+  const { data } = await apiAddUser({ email, password });
+
+  const token = data?.token;
+  const payload = decodeToken(data?.token as string);
+
+  return {
     token: token as string,
     payload,
   };
@@ -58,26 +88,6 @@ export const apiLoginUser = async (options: {
     email,
     password,
   });
-};
-
-export const loginUser = async (options: {
-  email: string;
-  password: string;
-}) => {
-  const { email, password } = options;
-
-  const { data } = await apiLoginUser({ email, password });
-
-  const token = data?.token;
-  const payload = decodeToken(token);
-
-  return {
-    id: payload.userId,
-    email: payload.email,
-    name: payload.name,
-    token: token as string,
-    payload,
-  };
 };
 
 export const randomAuthHeader = async (options: { token?: string } = {}) => {

@@ -5,7 +5,7 @@ import { JWTPayload } from "types/routes/users";
 
 export const backend = treaty(app);
 
-export const decodeToken = (token: string | undefined) => {
+export const decodeToken = (token: string) => {
   if (!token) {
     throw new Error("token not found");
   }

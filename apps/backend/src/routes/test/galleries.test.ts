@@ -1,4 +1,3 @@
-// test/index.test.ts
 import { describe, expect, it } from "bun:test";
 import { defaultDb } from "db";
 import { galleryImg } from "db/schema";

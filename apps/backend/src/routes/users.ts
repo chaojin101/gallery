@@ -1,22 +1,22 @@
 import { Value } from "@sinclair/typebox/value";
 import Elysia from "elysia";
-import { JWTPlugin } from "plugins";
-import { UserService } from "service/user";
+import { JWTPlugin } from "../plugins";
+import { UserService } from "../service/user";
 import {
   MSG_EMAIL_EXISTS,
   MSG_INVALID_EMAIL_OR_PASSWORD,
   SignReqSchema,
   SignRespSchema,
-} from "types/routes/users";
+} from "../types/routes/users";
 
 export const usersRoute = new Elysia({ prefix: "/v1/users" })
   .use(JWTPlugin)
   .post(
     "/sign-up",
     async ({ body, jwt }) => {
-      const { email, password } = body;
-
       const resp = Value.Create(SignRespSchema);
+
+      const { email, password } = body;
 
       if (await UserService.isEmailTaken(email)) {
         resp.base.msg = MSG_EMAIL_EXISTS;
@@ -27,10 +27,14 @@ export const usersRoute = new Elysia({ prefix: "/v1/users" })
 
       const user = await UserService.addUser({ email, hashedPassword });
 
-      const token = await jwt.sign({ ...user });
+      const token = await jwt.sign({
+        email: user.email,
+        userId: user.id,
+        name: user.name,
+      });
 
       resp.base.success = true;
-      resp.token = token;
+      resp.data.token = token;
 
       return resp;
     },
@@ -64,7 +68,7 @@ export const usersRoute = new Elysia({ prefix: "/v1/users" })
       });
 
       resp.base.success = true;
-      resp.token = token;
+      resp.data.token = token;
 
       return resp;
     },

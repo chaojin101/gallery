@@ -6,6 +6,7 @@ import {
   randomEmail,
   randomPassword,
   randomUser,
+  TestUserDBService,
 } from "test-tools/users";
 import {
   MSG_EMAIL_EXISTS,
@@ -22,11 +23,17 @@ describe("sign-up", () => {
     expect(error).toBeNull();
     expect(data?.base.success).toBe(true);
 
-    const payload = decodeToken(data?.token);
+    expect(data?.data.token).not.toBeUndefined();
+    const payload = decodeToken(data?.data.token as string);
 
-    expect(payload.email).toBe(email);
-    expect(payload.userId).not.toBeUndefined();
-    expect(payload.name).not.toBeUndefined();
+    const userDB = await TestUserDBService.getUserByEmail(email);
+    if (!userDB) {
+      throw new Error("user not created");
+    }
+
+    expect(payload.email).toBe(userDB.email);
+    expect(payload.userId).toBe(userDB.id);
+    expect(payload.name).toBe(userDB.name);
   });
 
   it("duplicate email", async () => {
@@ -42,7 +49,7 @@ describe("sign-up", () => {
     expect(error).toBeNull();
     expect(data?.base.success).toBe(false);
     expect(data?.base.msg).toBe(MSG_EMAIL_EXISTS);
-    expect(data?.token).toBe("");
+    expect(data?.data.token).toBe("");
   });
 });
 
@@ -56,7 +63,8 @@ describe("sign-in", () => {
     expect(error).toBeNull();
     expect(data?.base.success).toBe(true);
 
-    const payload = decodeToken(data?.token);
+    expect(data?.data.token).not.toBeUndefined();
+    const payload = decodeToken(data?.data.token as string);
 
     expect(payload.email).toBe(user.email);
     expect(payload.userId).toBe(user.id);
@@ -72,7 +80,7 @@ describe("sign-in", () => {
     expect(error).toBeNull();
     expect(data?.base.success).toBe(false);
     expect(data?.base.msg).toBe(MSG_INVALID_EMAIL_OR_PASSWORD);
-    expect(data?.token).toBe("");
+    expect(data?.data.token).toBe("");
   });
 
   it("wrong password", async () => {
@@ -88,6 +96,6 @@ describe("sign-in", () => {
     expect(error).toBeNull();
     expect(data?.base.success).toBe(false);
     expect(data?.base.msg).toBe(MSG_INVALID_EMAIL_OR_PASSWORD);
-    expect(data?.token).toBe("");
+    expect(data?.data.token).toBe("");
   });
 });

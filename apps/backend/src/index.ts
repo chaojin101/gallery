@@ -1,7 +1,9 @@
 import { logger } from "@bogeychan/elysia-logger";
+import cors from "@elysiajs/cors";
 import swagger from "@elysiajs/swagger";
 import { Elysia } from "elysia";
-import { galleriesRoute } from "routes/galleries";
+import { collectionsRoute } from "./routes/collections";
+import { galleriesRoute } from "./routes/galleries";
 import { usersRoute } from "./routes/users";
 
 const myLogger = logger({
@@ -11,10 +13,15 @@ const myLogger = logger({
 });
 
 export const app = new Elysia({ prefix: "/api" })
+  .onAfterHandle(({ set }) => {
+    set.headers["Access-Control-Allow-Headers"] = "*";
+  })
+  .use(cors())
   .use(myLogger)
   .use(swagger())
   .use(usersRoute)
   .use(galleriesRoute)
+  .use(collectionsRoute)
   .get("/", ({}) => "Hello, world!")
   .listen(3000);
 

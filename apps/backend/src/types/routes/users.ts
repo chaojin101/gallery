@@ -1,5 +1,5 @@
 import { Static, t } from "elysia";
-import { BaseRespSchema } from ".";
+import { baseRespSchema } from ".";
 
 export const SignReqSchema = t.Object({
   email: t.String({ format: "email" }),
@@ -10,8 +10,18 @@ export const SignReqSchema = t.Object({
 });
 
 export const SignRespSchema = t.Object({
-  base: BaseRespSchema,
-  token: t.String(),
+  base: baseRespSchema,
+  data: t.Object({
+    token: t.String(),
+    user: t.Object({
+      id: t.String(),
+      email: t.String(),
+      name: t.String(),
+      verified: t.Boolean(),
+      createdAt: t.Date(),
+      updatedAt: t.Date(),
+    }),
+  }),
 });
 
 export const JWTPayloadSchema = t.Object({

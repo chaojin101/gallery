@@ -1,8 +1,8 @@
 import { faker } from "@faker-js/faker";
-import { Gallery } from "db/schema";
 import { backend } from "test-tools";
+import { Gallery } from "../db/schema";
 import { randomImgUrls } from "./img";
-import { randomAuthHeader } from "./users";
+import { randomAuthHeader, randomUser } from "./users";
 
 export const randomGalleryId = () => {
   return faker.string.uuid();
@@ -87,4 +87,24 @@ export const randomGallery = async (
     ...gallery,
     token: token,
   };
+};
+
+export const randomGalleryWithImg = async (
+  options: {
+    token?: string;
+    min?: number;
+    max?: number;
+  } = {}
+) => {
+  const { token = (await randomUser()).token, min = 1, max = 10 } = options;
+
+  const gallery = await randomGallery({ token });
+  const urls = randomImgUrls({ min, max });
+
+  const result = await apiAppendGallery({
+    token,
+    gallery,
+    urls,
+  });
+  return result;
 };

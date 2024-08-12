@@ -1,6 +1,6 @@
-import { gallerySchema, imgSchema } from "db/schema";
 import { t } from "elysia";
-import { BaseRespSchema } from ".";
+import { baseRespSchema } from ".";
+import { gallerySchema, imgSchema } from "../../db/schema";
 
 export const addGalleryReqBodySchema = t.Object({
   name: t.String({ minLength: 1, maxLength: 100 }),
@@ -8,7 +8,7 @@ export const addGalleryReqBodySchema = t.Object({
 });
 
 export const addGalleryRespBodySchema = t.Object({
-  base: BaseRespSchema,
+  base: baseRespSchema,
   gallery: gallerySchema,
 });
 
@@ -17,28 +17,23 @@ export const appendImgToGalleryReqBodySchema = t.Object({
 });
 
 export const appendImgGalleryRespBodySchema = t.Object({
-  base: BaseRespSchema,
+  base: baseRespSchema,
   gallery: gallerySchema,
 });
 
-export const getGalleryByIdReqQuerySchema = t.Object({
-  offset: t.Optional(t.Numeric({ minimum: 0, maximum: 10000, default: 0 })),
-  limit: t.Optional(t.Numeric({ minimum: 1, maximum: 100, default: 10 })),
-});
-
 export const getGalleryByIdRespBodySchema = t.Object({
-  base: BaseRespSchema,
+  base: baseRespSchema,
   gallery: gallerySchema,
   imgs: t.Array(imgSchema),
 });
 
 export const getLatestGalleriesReqQuerySchema = t.Object({
-  offset: t.Optional(t.Numeric({ minimum: 0, maximum: 10000, default: 0 })),
+  page: t.Optional(t.Numeric({ minimum: 0, maximum: 10000, default: 0 })),
   limit: t.Optional(t.Numeric({ minimum: 1, maximum: 100, default: 10 })),
 });
 
 export const getLatestGalleriesRespBodySchema = t.Object({
-  base: BaseRespSchema,
+  base: baseRespSchema,
   galleries: t.Array(
     t.Object({
       g: gallerySchema,

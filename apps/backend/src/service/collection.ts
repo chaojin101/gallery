@@ -1,26 +1,26 @@
 import { asc, desc, eq } from "drizzle-orm";
 import { defaultDb } from "../db";
-import { gallery, galleryImg } from "../db/schema";
+import { collection, gallery, galleryImg } from "../db/schema";
 
-export class GalleryService {
-  static async addGallery(options: {
+export class CollectionService {
+  static async addCollection(options: {
     userId: string;
     name: string;
     description: string;
   }) {
     const result = await defaultDb
-      .insert(gallery)
+      .insert(collection)
       .values({ ...options })
       .returning();
 
     return result[0];
   }
 
-  static async getGalleryByName(name: string) {
+  static async getCollectionByName(name: string) {
     const result = await defaultDb
       .select()
-      .from(gallery)
-      .where(eq(gallery.name, name));
+      .from(collection)
+      .where(eq(collection.name, name));
 
     return result[0];
   }
