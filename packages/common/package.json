@@ -1,5 +1,5 @@
 {
-  "name": "common",
+  "name": "@gallery/common",
   "module": "index.ts",
   "type": "module",
   "version": "0.0.1",

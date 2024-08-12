@@ -8,5 +8,4 @@ async function signUp() {
     email: "string",
     password: "string",
   });
-  response.data?.msg;
 }

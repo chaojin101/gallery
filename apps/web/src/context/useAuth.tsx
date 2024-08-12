@@ -1,80 +1,80 @@
-// "use client";
+"use client";
 
-// import { gql } from "@/__generated__";
-// import { JWTPayload } from "@gallery/backend";
-// import { toUser } from "@/lib/utils";
-// import { useLazyQuery } from "@apollo/client";
-// import {
-//   createContext,
-//   ReactNode,
-//   useContext,
-//   useEffect,
-//   useState,
-// } from "react";
-// import { useMutation } from "@tanstack/react-query";
+import { decodeToken } from "@/lib/utils";
+import { JWTPayload } from "@gallery/backend";
+import jwt from "jsonwebtoken";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
-// type AuthContextType = {
-//   user: JWTPayload | null;
-//   login: (options: { email: string; password: string }) => Promise<void>;
-//   loginLoading: boolean;
-//   logout: () => void;
-// };
+const LOCALSTORE_TOKEN_KEY = "token";
 
-// const AuthContext = createContext<AuthContextType>({} as AuthContextType);
+type JWTState = JWTPayload & jwt.Jwt;
 
-// export const AuthProvider = ({ children }: { children: ReactNode }) => {
-//   const [user, setUser] = useState<JWTPayload | null>(null);
-//   const [isReady, setIsReady] = useState(false);
+type AuthHeader = {
+  authorization: string;
+};
 
-//   useEffect(() => {
-//     const token = localStorage.getItem("token");
-//     if (!token) {
-//       setUser(null);
-//       setIsReady(true);
-//     }
+type AuthContextType = {
+  tokenPayload: JWTState | null;
+  authHeader: AuthHeader | null;
+  setAuthToken: (token: string) => void;
+  setTokenPayload: (payload: JWTState) => void;
+  logout: () => void;
+};
 
-//     // TODO: Check if token is valid
+const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
-//     const user = toUser(token as string);
-//     setUser(user);
-//     setIsReady(true);
-//   }, []);
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [authHeader, setAuthHeader] = useState<AuthHeader | null>(null);
+  const [tokenPayload, setTokenPayload] = useState<JWTState | null>(null);
+  const [isReady, setIsReady] = useState(false);
 
-//   const [loginQuery, { loading: loginLoading }] = useLazyQuery(LOGIN);
-//   useMutation({
-//     mutationFn:
-//   })
+  useEffect(() => {
+    const token = localStorage.getItem(LOCALSTORE_TOKEN_KEY);
+    if (!token) {
+      setIsReady(true);
+      return;
+    }
 
-//   const login = async (options: { email: string; password: string }) => {
-//     const response = await loginQuery({ variables: options });
-//     const token = response.data?.login.token;
-//     if (token) {
-//       localStorage.setItem("token", token);
-//       const user = toUser(token);
-//       setUser(user);
-//     }
-//   };
+    const tokenPayload = decodeToken(token);
+    setAuthHeader({ authorization: `Bearer ${token}` });
+    setTokenPayload(tokenPayload);
+    setIsReady(true);
+  }, []);
 
-//   const logout = () => {
-//     localStorage.removeItem("token");
-//     setUser(null);
-//   };
+  const setAuthToken = (token: string) => {
+    localStorage.setItem(LOCALSTORE_TOKEN_KEY, token);
+    const tokenPayload = decodeToken(token);
+    setAuthHeader({ authorization: `Bearer ${token}` });
+    setTokenPayload(tokenPayload);
+  };
 
-//   return (
-//     <AuthContext.Provider value={{ user, login, loginLoading, logout }}>
-//       {isReady && children}
-//     </AuthContext.Provider>
-//   );
-// };
+  const logout = () => {
+    localStorage.removeItem(LOCALSTORE_TOKEN_KEY);
+    setAuthHeader(null);
+    setTokenPayload(null);
+  };
 
-// export const useAuth = () => {
-//   return useContext(AuthContext);
-// };
+  return (
+    <AuthContext.Provider
+      value={{
+        authHeader,
+        tokenPayload,
+        setTokenPayload,
+        setAuthToken,
+        logout,
+      }}
+    >
+      {isReady && children}
+    </AuthContext.Provider>
+  );
+};
 
-// const LOGIN = gql(`
-//     query Login($email: String!, $password: String!) {
-//         login(email: $email, password: $password) {
-//         token
-//         }
-//     }
-// `);
+export const useAuth = () => {
+  return useContext(AuthContext);
+};

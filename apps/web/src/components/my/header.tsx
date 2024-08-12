@@ -2,7 +2,7 @@ import { useAuth } from "@/context/useAuth";
 import Link from "next/link";
 
 export const Header = () => {
-  const { user, logout } = useAuth();
+  const { tokenPayload, logout } = useAuth();
 
   return (
     <header className="bg-header py-4 flex-col gap-4">
@@ -15,23 +15,31 @@ export const Header = () => {
         </Link>
 
         <div className="ml-auto flex items-center gap-4">
-          {user && <p>{user.email}</p>}
-          {user && <button onClick={() => logout()}>Logout</button>}
-          {!user && <Link href={"/auth/login"}>Login</Link>}
+          {tokenPayload ? (
+            <>
+              <p>{tokenPayload.email}</p>
+              <button onClick={() => logout()}>Logout</button>
+            </>
+          ) : (
+            <>
+              <Link href={"/auth/login"}>Login</Link>
+              <Link href={"/auth/register"}>Register</Link>
+            </>
+          )}
         </div>
       </div>
       <nav className="flex gap-4 items-center">
         <Link
-          href={"/"}
+          href={"/gallery/latest"}
           className="font-bold text-xl cursor-pointer hover:scale-[1.05] transition-all"
         >
-          Galleries
+          Gallery
         </Link>
         <Link
-          href={"/collection"}
+          href={"/collection/latest"}
           className="font-bold text-xl cursor-pointer hover:scale-[1.05] transition-all"
         >
-          Collections
+          Collection
         </Link>
       </nav>
     </header>

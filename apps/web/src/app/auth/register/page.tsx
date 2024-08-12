@@ -31,18 +31,21 @@ export default function Page() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginInputs>({
-    resolver: zodResolver(loginSchema),
+  } = useForm<registerForm>({
+    resolver: zodResolver(registerFormSchema),
   });
 
-  const loginM = useMutation({
+  const registerM = useMutation({
     mutationFn: async (options: { email: string; password: string }) => {
-      return await backend.api.v1.users["sign-in"].post(options);
+      return await backend.api.v1.users["sign-up"].post(options);
     },
   });
 
-  const onSubmit = async (data: LoginInputs) => {
-    const result = await loginM.mutateAsync(data);
+  const onSubmit = async (data: registerForm) => {
+    const result = await registerM.mutateAsync({
+      email: data.email,
+      password: data.password,
+    });
     console.log(result);
 
     if (!result.data?.base.success) {
@@ -58,7 +61,7 @@ export default function Page() {
   return (
     <Card className="max-w-md mx-auto mt-12">
       <CardHeader>
-        <CardTitle>Login</CardTitle>
+        <CardTitle>Register</CardTitle>
       </CardHeader>
       <CardContent>
         <form>
@@ -86,28 +89,55 @@ export default function Page() {
                 </div>
               )}
             </div>
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="cpassword">Comfirmed Password</Label>
+              <Input
+                id="cpassword"
+                type="password"
+                placeholder="Comfirmed Password"
+                {...register("confirmPassword")}
+              />
+              {errors.confirmPassword && (
+                <div className="pl-1 text-red-400 text-xs">
+                  {errors.confirmPassword.message}
+                </div>
+              )}
+            </div>
           </div>
         </form>
       </CardContent>
       <CardFooter className="flex justify-between">
         <Button variant="outline">Cancel</Button>
-        <Button onClick={handleSubmit(onSubmit)} disabled={loginM.isPending}>
-          {loginM.isPending && (
+        <Button onClick={handleSubmit(onSubmit)} disabled={registerM.isPending}>
+          {registerM.isPending && (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           )}{" "}
-          Login
+          Register
         </Button>
       </CardFooter>
     </Card>
   );
 }
 
-const loginSchema = z.object({
-  email: z.string().email(),
-  password: z
-    .string()
-    .min(SignReqSchema.properties.password.minLength ?? 6)
-    .max(SignReqSchema.properties.password.maxLength ?? 20),
-});
+const registerFormSchema = z
+  .object({
+    email: z.string().email(),
+    password: z
+      .string()
+      .min(SignReqSchema.properties.password.minLength ?? 6)
+      .max(SignReqSchema.properties.password.maxLength ?? 20),
+    confirmPassword: z.string(),
+  })
+  .superRefine((arg, ctx) => {
+    if (arg.confirmPassword !== arg.password) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Passwords do not match",
+        path: ["confirmPassword"],
+      });
+      return false;
+    }
+    return true;
+  });
 
-type LoginInputs = z.infer<typeof loginSchema>;
+type registerForm = z.infer<typeof registerFormSchema>;
