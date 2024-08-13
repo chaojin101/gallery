@@ -6,8 +6,8 @@ export const Header = () => {
   console.log(`tokenPayload: ${tokenPayload}`);
 
   return (
-    <header className="bg-header py-4 flex-col gap-4">
-      <div className="flex gap-4 items-center justify-between">
+    <header className="py-4 flex-col gap-4">
+      <div className="px-4 flex gap-4 items-center justify-between">
         <Link
           href={"/"}
           className="font-bold text-2xl cursor-pointer hover:scale-[1.05] transition-all"
@@ -29,7 +29,7 @@ export const Header = () => {
           )}
         </div>
       </div>
-      <nav className="flex gap-4 items-center">
+      <nav className="px-4 flex gap-4 items-center bg-slate-600 text-white">
         <Link
           href={"/gallery/latest"}
           className="font-bold text-xl cursor-pointer hover:scale-[1.05] transition-all"

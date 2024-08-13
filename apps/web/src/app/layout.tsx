@@ -26,9 +26,9 @@ export default function RootLayout({
         )}
       >
         <Provider>
-          <div className="relative 2xl:max-w-screen-2xl xl:max-w-screen-xl lg:max-w-screen-lg md:max-w-screen-md sm:max-w-screen-sm xs:max-w-screen-xs mx-auto px-4">
+          <div>
             <Header />
-            {children}
+            <div className="relative px-4">{children}</div>
           </div>
         </Provider>
       </body>
