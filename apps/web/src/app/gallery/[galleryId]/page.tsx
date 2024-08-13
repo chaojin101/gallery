@@ -73,6 +73,7 @@ const page = () => {
             </Button>
           )}
         </section>
+
         <section className="grid-container">
           {q.data?.data?.imgs.map((img, index) => (
             <div
