@@ -3,11 +3,10 @@ import Link from "next/link";
 
 export const Header = () => {
   const { tokenPayload, logout } = useAuth();
-  console.log(`tokenPayload: ${tokenPayload}`);
 
   return (
-    <header className="py-4 flex-col gap-4">
-      <div className="px-4 flex gap-4 items-center justify-between">
+    <header className="flex flex-col gap-2">
+      <div className="px-4 pt-4 flex gap-4 items-center justify-between">
         <Link
           href={"/"}
           className="font-bold text-2xl cursor-pointer hover:scale-[1.05] transition-all"

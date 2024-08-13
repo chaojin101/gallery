@@ -55,7 +55,9 @@ const page = () => {
 
   return (
     <>
-      <div className="grid gap-4">
+      <div className="grid gap-2">
+        <h1 className="pt-2">{q.data?.data?.gallery.name}</h1>
+
         <section className="flex gap-2">
           <Button onClick={toggleSelectImgToCollection}>
             Select imgs to collection
