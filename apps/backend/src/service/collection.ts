@@ -1,6 +1,6 @@
-import { asc, desc, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { defaultDb } from "../db";
-import { collection, gallery, galleryImg } from "../db/schema";
+import { collection } from "../db/schema";
 
 export class CollectionService {
   static async addCollection(options: {
@@ -25,40 +25,9 @@ export class CollectionService {
     return result[0];
   }
 
-  static async getGalleryById(id: string) {
-    const result = await defaultDb
-      .select()
-      .from(gallery)
-      .where(eq(gallery.id, id));
-
-    return result[0];
-  }
-
-  static async getLatestGallery(options: { offset?: number; limit?: number }) {
-    const { offset = 0, limit = 10 } = options;
-
-    const result = await defaultDb.query.gallery.findMany({
-      offset,
-      limit,
-      orderBy: [desc(gallery.createdAt)],
-      with: {
-        galleryImgs: {
-          orderBy: [asc(galleryImg.order)],
-          limit: 1,
-          columns: {},
-          with: {
-            img: true,
-          },
-        },
-      },
+  static async getCollectionById(options: { id: string }) {
+    return await defaultDb.query.collection.findFirst({
+      where: eq(collection.id, options.id),
     });
-
-    return result.map((gallery) => ({
-      ...gallery,
-      galleryImgs: undefined,
-      imgs: gallery.galleryImgs.map((galleryImg) => ({
-        ...galleryImg.img,
-      })),
-    }));
   }
 }

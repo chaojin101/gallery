@@ -2,8 +2,9 @@
 
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/context/useAuth";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode } from "react";
+import { queryClient } from "./lib/queryClient";
 
 export function Provider({ children }: { children: ReactNode }) {
   return (
@@ -15,4 +16,3 @@ export function Provider({ children }: { children: ReactNode }) {
     </QueryClientProvider>
   );
 }
-const queryClient = new QueryClient();

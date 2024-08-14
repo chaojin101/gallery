@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogTitle,
   DialogTrigger,
@@ -61,10 +62,13 @@ const NewCollectionFormBtn = () => {
   const onSubmit = async (data: NewCollectionForm) => {
     const result = await newCollectionM.mutateAsync(data);
 
-    if (!result.data?.base.success) {
+    if (!result.data || !result.data.base.success) {
       toast({ title: result.data?.base.msg });
       return;
     }
+
+    setOpen(false);
+    toast({ title: `Collection ${data.name} created` });
   };
 
   return (
@@ -74,6 +78,7 @@ const NewCollectionFormBtn = () => {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogTitle>Create a new collection</DialogTitle>
+        <DialogDescription />
         <form>
           <div className="grid w-full items-center gap-4">
             <div className="flex flex-col space-y-1.5">

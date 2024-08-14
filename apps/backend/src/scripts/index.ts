@@ -1,9 +1,11 @@
-import { randomGalleryWithImg } from "test-tools/galleries";
+import { defaultDb } from "db";
+import { gallery } from "db/schema";
+import { count } from "drizzle-orm";
 
 const main = async () => {
-  const result = await randomGalleryWithImg();
+  const amount = await defaultDb.select({ amount: count() }).from(gallery);
 
-  console.log(result.data?.base.success);
+  console.log(amount);
 
   process.exit(0);
 };

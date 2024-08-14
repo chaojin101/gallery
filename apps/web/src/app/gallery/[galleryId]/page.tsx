@@ -1,9 +1,9 @@
 "use client";
 
 import { backend } from "@/backend";
-import NewCollectionFormBtn from "@/components/my/new-collection-form";
+import { AddCollectionCard } from "@/components/my/add-collection-card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "@/components/ui/use-toast";
 
 import { useCheckboxes } from "@/use-hooks/use-checkboxes";
 import {
@@ -20,9 +20,7 @@ const page = () => {
   const q = useQuery({
     queryKey: ["gallery", params.galleryId],
     queryFn: async () => {
-      return await backend.api.v1
-        .galleries({ id: params.galleryId })
-        .get({ query: { page: 1, limit: 100 } });
+      return await backend.api.v1.galleries({ id: params.galleryId }).get();
     },
   });
 
@@ -39,11 +37,26 @@ const page = () => {
     count: q.data?.data?.imgs.length || 0,
   });
 
+  const selectedImgIds = checkboxes
+    .map((checked, index) =>
+      checked ? q.data?.data?.imgs[index].id : undefined
+    )
+    .filter((id) => id !== undefined);
+
   const {
     selectImgToCollectionStatus,
     toggleSelectImgToCollection,
     setSelectImgToCollectionStatus,
   } = useSelectImgToCollectionStepper();
+
+  const handleAddSelectedImgsToCollectionBtn = async () => {
+    if (selectedImgIds.length === 0) {
+      toast({ title: "Please select at least one image" });
+      return;
+    }
+
+    setSelectImgToCollectionStatus(SelectImgToCollectionStatus.adding);
+  };
 
   if (q.isLoading) {
     return <div>Loading...</div>;
@@ -56,7 +69,11 @@ const page = () => {
   return (
     <>
       <div className="grid gap-2">
-        <h1 className="pt-2">{q.data?.data?.gallery.name}</h1>
+        <div>{checkboxes.length}</div>
+
+        <h1 className="pt-2">
+          {q.data?.data?.gallery.name} {` (${q.data?.data?.imgs.length}) `}
+        </h1>
 
         <section className="flex gap-2">
           <Button onClick={toggleSelectImgToCollection}>
@@ -64,13 +81,7 @@ const page = () => {
           </Button>
           {selectImgToCollectionStatus >=
             SelectImgToCollectionStatus.selecting && (
-            <Button
-              onClick={() =>
-                setSelectImgToCollectionStatus(
-                  SelectImgToCollectionStatus.adding
-                )
-              }
-            >
+            <Button onClick={handleAddSelectedImgsToCollectionBtn}>
               Add selected imgs to collection
             </Button>
           )}
@@ -112,13 +123,20 @@ const page = () => {
       {isSingleImgView && (
         <section>
           <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black select-none">
-            <img
-              onClick={() => setIsSingleImgView(false)}
-              className="object-contain w-full h-full"
-              src={q.data?.data?.imgs[singleImgIndex].url}
-              alt=""
-              loading="lazy"
-            />
+            <div className="flex flex-col w-full h-full">
+              <div className=" text-white">
+                <p>{` (${singleImgIndex + 1} / ${q.data?.data?.imgs.length}) `}</p>
+              </div>
+
+              <img
+                onClick={() => setIsSingleImgView(false)}
+                className="object-contain w-full h-full"
+                src={q.data?.data?.imgs[singleImgIndex].url}
+                alt=""
+                loading="lazy"
+              />
+            </div>
+
             <div
               onClick={prevImg}
               className="absolute top-0 left-0 h-full w-48 text-white flex justify-center items-center cursor-pointer"
@@ -142,17 +160,7 @@ const page = () => {
             }
             className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50 select-none"
           >
-            <Card
-              className="max-w-[600px]"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <CardHeader>
-                <CardTitle>Collections</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <NewCollectionFormBtn />
-              </CardContent>
-            </Card>
+            <AddCollectionCard selectedImgIds={selectedImgIds} />
           </div>
         </section>
       )}

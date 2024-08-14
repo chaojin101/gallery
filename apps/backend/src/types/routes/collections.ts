@@ -24,5 +24,37 @@ export const addCollectionRespBodySchema = t.Object({
   collection: collectionSchema,
 });
 
+export const getAddCollectionCardRespBodySchema = t.Object({
+  base: baseRespSchema,
+  data: t.Object({
+    collections: t.Array(
+      t.Object({
+        id: t.String(),
+        name: t.String(),
+        amount: t.Number(),
+      })
+    ),
+  }),
+});
+
+export const appendToCollectionReqBodySchema = t.Object({
+  amount: t.Number(),
+  collectionId: t.String(),
+  imgIds: t.Array(t.String()),
+});
+
+export const appendToCollectionRespBodySchema = t.Object({
+  base: baseRespSchema,
+  data: t.Object({
+    // collections: t.Array(
+    //   t.Object({
+    //     id: t.String(),
+    //     name: t.String(),
+    //     amount: t.Number(),
+    //   })
+    // ),
+  }),
+});
+
 export const MSG_COLLECTION_NAME_EXIST = "collection name already exists";
 export const MSG_COLLECTION_NOT_FOUND = "collection not found";
