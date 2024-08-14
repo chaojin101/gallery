@@ -137,6 +137,7 @@ export const collectionRelations = relations(collection, ({ one, many }) => ({
     fields: [collection.userId],
     references: [user.id],
   }),
+  collectionImgs: many(collectionImg),
 }));
 
 export const collectionImg = pgTable(

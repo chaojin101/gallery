@@ -9,14 +9,37 @@ import {
   appendToCollectionReqBodySchema,
   appendToCollectionRespBodySchema,
   getAddCollectionCardRespBodySchema,
+  getLatestCollectionsReqQuerySchema,
+  getLatestCollectionsRespBodySchema,
   MSG_COLLECTION_NAME_EXIST,
 } from "../types/routes/collections";
 import { authHeaderSchema } from "../types/routes/users";
 
 export const collectionsRoute = new Elysia({ prefix: "/v1/collections" })
+  .get(
+    "/latest",
+    async ({ query }) => {
+      const { limit = 10, page = 0 } = query;
+      const resp = Value.Create(getLatestCollectionsRespBodySchema);
+
+      resp.data.collections = await SQL.getLastestCollections({
+        limit,
+        page,
+      });
+
+      resp.base.success = true;
+      console.log(resp);
+      return resp;
+    },
+    {
+      query: getLatestCollectionsReqQuerySchema,
+      response: getLatestCollectionsRespBodySchema,
+    }
+  )
+
   .use(authPlugin)
   .post(
-    "/",
+    "",
     async ({ body, tokenPayload }) => {
       const resp = Value.Create(addCollectionRespBodySchema);
 

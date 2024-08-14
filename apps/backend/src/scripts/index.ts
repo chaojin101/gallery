@@ -1,11 +1,9 @@
-import { defaultDb } from "db";
-import { gallery } from "db/schema";
-import { count } from "drizzle-orm";
+import { backend } from "test-tools";
 
 const main = async () => {
-  const amount = await defaultDb.select({ amount: count() }).from(gallery);
+  const r = await backend.api.v1.collections.latest.get({ query: {} });
 
-  console.log(amount);
+  console.log(r);
 
   process.exit(0);
 };

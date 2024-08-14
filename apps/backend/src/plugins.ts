@@ -24,7 +24,7 @@ const bearerPlugin = new Elysia().derive(
 export const authPlugin = new Elysia()
   .use(JWTPlugin)
   .use(bearerPlugin)
-  .derive({ as: "global" }, async ({ jwt, bearer, error, headers }) => {
+  .derive({ as: "scoped" }, async ({ jwt, bearer, error }) => {
     const resp = Value.Create(addGalleryRespBodySchema);
 
     const tokenPayload = await jwt.verify(bearer);

@@ -45,14 +45,22 @@ export const appendToCollectionReqBodySchema = t.Object({
 
 export const appendToCollectionRespBodySchema = t.Object({
   base: baseRespSchema,
+});
+
+export const getLatestCollectionsReqQuerySchema = t.Object({
+  page: t.Optional(t.Numeric({ minimum: 0, maximum: 10000, default: 1 })),
+  limit: t.Optional(t.Numeric({ minimum: 1, maximum: 100, default: 10 })),
+});
+
+export const getLatestCollectionsRespBodySchema = t.Object({
+  base: baseRespSchema,
   data: t.Object({
-    // collections: t.Array(
-    //   t.Object({
-    //     id: t.String(),
-    //     name: t.String(),
-    //     amount: t.Number(),
-    //   })
-    // ),
+    collections: t.Array(
+      t.Object({
+        id: t.String(),
+        imgUrl: t.String(),
+      })
+    ),
   }),
 });
 

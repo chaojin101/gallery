@@ -1,9 +1,9 @@
 import { Value } from "@sinclair/typebox/value";
-import { count, eq } from "drizzle-orm";
+import { asc, count, eq } from "drizzle-orm";
 import { Static } from "elysia";
 import { defaultDb } from ".";
 import { getAddCollectionCardRespBodySchema } from "../types/routes/collections";
-import { collection, collectionImg } from "./schema";
+import { collection, collectionImg, img } from "./schema";
 
 export class SQL {
   static async getAddCollectionCard(options: {
@@ -57,5 +57,22 @@ export class SQL {
         order: startOrder + i,
       }))
     );
+  }
+
+  static async getLastestCollections(options: { page: number; limit: number }) {
+    const result = await defaultDb
+      .select({
+        id: collection.id,
+        imgUrl: img.url,
+      })
+      .from(collection)
+      .innerJoin(collectionImg, eq(collectionImg.collectionId, collection.id))
+      .innerJoin(img, eq(collectionImg.imgId, img.id))
+      .where(eq(collectionImg.order, 0))
+      .orderBy(asc(collection.createdAt))
+      .offset((options.page - 1) * options.limit)
+      .limit(options.limit);
+
+    return result;
   }
 }

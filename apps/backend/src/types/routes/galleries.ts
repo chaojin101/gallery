@@ -28,7 +28,7 @@ export const getGalleryByIdRespBodySchema = t.Object({
 });
 
 export const getLatestGalleriesReqQuerySchema = t.Object({
-  page: t.Optional(t.Numeric({ minimum: 0, maximum: 10000, default: 0 })),
+  page: t.Optional(t.Numeric({ minimum: 0, maximum: 10000, default: 1 })),
   limit: t.Optional(t.Numeric({ minimum: 1, maximum: 100, default: 10 })),
 });
 

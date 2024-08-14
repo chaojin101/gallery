@@ -22,7 +22,7 @@ export const app = new Elysia({ prefix: "/api" })
   .use(usersRoute)
   .use(galleriesRoute)
   .use(collectionsRoute)
-  .get("/", ({}) => "Hello, world!")
+  .get("", ({}) => "Hello, world!")
   .listen(3000);
 
 console.log(
