@@ -15,12 +15,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 
 const page = () => {
-  const params = useParams<{ galleryId: string }>();
+  const params = useParams<{ collectionId: string }>();
 
   const q = useQuery({
-    queryKey: ["gallery", params.galleryId],
+    queryKey: ["collection/id", params.collectionId],
     queryFn: async () => {
-      return await backend.api.v1.galleries({ id: params.galleryId }).get();
+      return await backend.api.v1.galleries({ id: params.collectionId }).get();
     },
   });
 

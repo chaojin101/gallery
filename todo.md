@@ -1,1 +1,3 @@
 - [x] feat: web display get latest collections
+- [x] feat: backend get specific collection
+- [ ] feat: web display get specific collection

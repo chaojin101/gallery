@@ -64,5 +64,15 @@ export const getLatestCollectionsRespBodySchema = t.Object({
   }),
 });
 
+export const getCollectionByIdRespBodySchema = t.Object({
+  base: baseRespSchema,
+  data: t.Object({
+    collection: t.Object({
+      name: t.String(),
+      imgs: t.Array(t.Object({ id: t.String(), url: t.String() })),
+    }),
+  }),
+});
+
 export const MSG_COLLECTION_NAME_EXIST = "collection name already exists";
 export const MSG_COLLECTION_NOT_FOUND = "collection not found";

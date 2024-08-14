@@ -1,9 +1,11 @@
-import { backend } from "test-tools";
+import { SQL } from "db/sql";
 
 const main = async () => {
-  const r = await backend.api.v1.collections.latest.get({ query: {} });
+  const r = await SQL.getCollectionById({
+    id: "3052dd0a-6478-4483-8d99-b15f7dafe1ca",
+  });
 
-  console.log(r);
+  // console.log(r?.);
 
   process.exit(0);
 };

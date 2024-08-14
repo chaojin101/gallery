@@ -9,6 +9,7 @@ import {
   appendToCollectionReqBodySchema,
   appendToCollectionRespBodySchema,
   getAddCollectionCardRespBodySchema,
+  getCollectionByIdRespBodySchema,
   getLatestCollectionsReqQuerySchema,
   getLatestCollectionsRespBodySchema,
   MSG_COLLECTION_NAME_EXIST,
@@ -34,6 +35,26 @@ export const collectionsRoute = new Elysia({ prefix: "/v1/collections" })
     {
       query: getLatestCollectionsReqQuerySchema,
       response: getLatestCollectionsRespBodySchema,
+    }
+  )
+  .get(
+    "/:id",
+    async ({ params }) => {
+      const resp = Value.Create(getCollectionByIdRespBodySchema);
+
+      const result = await SQL.getCollectionById({ id: params.id });
+      if (!result) {
+        resp.base.msg = "Collection not found";
+        return resp;
+      }
+
+      resp.data.collection = result;
+      resp.base.success = true;
+
+      return resp;
+    },
+    {
+      response: getCollectionByIdRespBodySchema,
     }
   )
 

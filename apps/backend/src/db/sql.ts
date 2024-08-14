@@ -2,7 +2,10 @@ import { Value } from "@sinclair/typebox/value";
 import { asc, count, eq } from "drizzle-orm";
 import { Static } from "elysia";
 import { defaultDb } from ".";
-import { getAddCollectionCardRespBodySchema } from "../types/routes/collections";
+import {
+  getAddCollectionCardRespBodySchema,
+  getCollectionByIdRespBodySchema,
+} from "../types/routes/collections";
 import { collection, collectionImg, img } from "./schema";
 
 export class SQL {
@@ -74,5 +77,43 @@ export class SQL {
       .limit(options.limit);
 
     return result;
+  }
+
+  static async getCollectionById(options: {
+    id: string;
+  }): Promise<Static<
+    typeof getCollectionByIdRespBodySchema.properties.data.properties.collection
+  > | null> {
+    const c = await defaultDb.query.collection.findFirst({
+      where: eq(collection.id, options.id),
+      columns: {
+        name: true,
+      },
+      with: {
+        collectionImgs: {
+          columns: {},
+          with: {
+            img: true,
+          },
+          orderBy: asc(collectionImg.order),
+        },
+      },
+    });
+
+    if (!c) {
+      return null;
+    }
+
+    const r = Value.Create(
+      getCollectionByIdRespBodySchema.properties.data.properties.collection
+    );
+
+    r.name = c.name;
+    r.imgs = c.collectionImgs.map((ci) => ({
+      id: ci.img.id,
+      url: ci.img.url,
+    }));
+
+    return r;
   }
 }
