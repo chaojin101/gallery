@@ -12,6 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
 import { useAuth } from "@/context/useAuth";
+import { QUERY_KEY } from "@/lib/constant";
+import { queryClient } from "@/lib/queryClient";
 import {
   COLLECTION_DESCRIPTION_MAX_LENGTH,
   COLLECTION_DESCRIPTION_MIN_LENGTH,
@@ -53,7 +55,7 @@ const NewCollectionFormBtn = () => {
 
   const newCollectionM = useMutation({
     mutationFn: async (options: { name: string; description: string }) => {
-      return await backend.api.v1.collections.index.post(options, {
+      return await backend.api.v1.collections.post(options, {
         headers: authHeader!,
       });
     },
@@ -68,6 +70,9 @@ const NewCollectionFormBtn = () => {
     }
 
     setOpen(false);
+    queryClient.invalidateQueries({
+      queryKey: [QUERY_KEY.ADD_COLLECTION_CARD],
+    });
     toast({ title: `Collection ${data.name} created` });
   };
 

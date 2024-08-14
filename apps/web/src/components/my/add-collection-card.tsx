@@ -3,6 +3,7 @@ import NewCollectionFormBtn from "@/components/my/new-collection-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/components/ui/use-toast";
 import { useAuth } from "@/context/useAuth";
+import { QUERY_KEY } from "@/lib/constant";
 import { queryClient } from "@/lib/queryClient";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -19,7 +20,7 @@ export const AddCollectionCard = (props: Props) => {
   }
 
   const q = useQuery({
-    queryKey: ["addCollectionCard"],
+    queryKey: [QUERY_KEY.ADD_COLLECTION_CARD],
     queryFn: async () => {
       return await backend.api.v1.collections.addCollectionCard.get({
         headers: authHeader,
@@ -59,7 +60,9 @@ export const AddCollectionCard = (props: Props) => {
       });
     }
 
-    await queryClient.invalidateQueries({ queryKey: ["addCollectionCard"] });
+    await queryClient.invalidateQueries({
+      queryKey: [QUERY_KEY.ADD_COLLECTION_CARD],
+    });
 
     toast({
       title: "Success",

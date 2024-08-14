@@ -1,1 +1,1 @@
-- [ ] feat: web display get latest collections
+- [x] feat: web display get latest collections
