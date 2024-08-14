@@ -28,7 +28,7 @@ export default function RootLayout({
         <Provider>
           <div>
             <Header />
-            <div className="relative px-4">{children}</div>
+            <div className="relative px-4 pt-2">{children}</div>
           </div>
         </Provider>
       </body>
