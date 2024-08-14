@@ -69,8 +69,6 @@ const page = () => {
   return (
     <>
       <div className="grid gap-2">
-        <div>{checkboxes.length}</div>
-
         <h1 className="pt-2">
           {q.data?.data?.gallery.name} {` (${q.data?.data?.imgs.length}) `}
         </h1>
