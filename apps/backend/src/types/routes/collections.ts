@@ -55,6 +55,7 @@ export const getLatestCollectionsReqQuerySchema = t.Object({
 export const getLatestCollectionsRespBodySchema = t.Object({
   base: baseRespSchema,
   data: t.Object({
+    totalCount: t.Number(),
     collections: t.Array(
       t.Object({
         id: t.String(),

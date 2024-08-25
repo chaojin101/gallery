@@ -1,6 +1,6 @@
 import { Value } from "@sinclair/typebox/value";
 import Elysia from "elysia";
-import { SQL } from "../db/sql";
+import { CollectionSQL, SQL } from "../db/sql";
 import { authPlugin } from "../plugins";
 import { CollectionService } from "../service/collection";
 import {
@@ -23,13 +23,13 @@ export const collectionsRoute = new Elysia({ prefix: "/v1/collections" })
       const { limit = 10, page = 0 } = query;
       const resp = Value.Create(getLatestCollectionsRespBodySchema);
 
-      resp.data.collections = await SQL.getLastestCollections({
+      resp.data.collections = await CollectionSQL.getLastest({
         limit,
         page,
       });
+      resp.data.totalCount = await CollectionSQL.getTotalCount();
 
       resp.base.success = true;
-      console.log(resp);
       return resp;
     },
     {

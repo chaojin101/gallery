@@ -11,14 +11,14 @@
     "script:index": "bun run src/scripts/index.ts"
   },
   "dependencies": {
-    "@bogeychan/elysia-logger": "^0.1.0",
+    "@bogeychan/elysia-logger": "^0.1.2",
     "@elysiajs/bearer": "^1.0.2",
     "@elysiajs/cors": "^1.0.4",
     "@elysiajs/jwt": "^1.0.2",
     "@elysiajs/swagger": "^1.0.5",
     "@faker-js/faker": "^8.4.1",
-    "bcrypt": "^5.1.1",
     "@gallery/common": "workspace:*",
+    "bcrypt": "^5.1.1",
     "drizzle-orm": "^0.32.0",
     "drizzle-typebox": "^0.1.1",
     "elysia": "latest",

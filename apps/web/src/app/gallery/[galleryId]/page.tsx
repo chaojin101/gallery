@@ -2,6 +2,7 @@
 
 import { backend } from "@/backend";
 import { AddCollectionCard } from "@/components/my/add-collection-card";
+import { SingleImg } from "@/components/my/single-img";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 
@@ -10,9 +11,10 @@ import {
   SelectImgToCollectionStatus,
   useSelectImgToCollectionStepper,
 } from "@/use-hooks/use-select-img-to-collection-stepper";
-import { useSingleImgView } from "@/use-hooks/use-single-img-view";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
+import { useState } from "react";
+import { useEventListener } from "usehooks-ts";
 
 const page = () => {
   const params = useParams<{ galleryId: string }>();
@@ -24,14 +26,8 @@ const page = () => {
     },
   });
 
-  const {
-    isSingleImgView,
-    setIsSingleImgView,
-    singleImgIndex,
-    setSingleImgIndex,
-    nextImg,
-    prevImg,
-  } = useSingleImgView({ imgCount: q.data?.data?.imgs.length || 0 });
+  const [curImgIndex, setCurImgIndex] = useState(0);
+  const [isSingleImgView, setIsSingleImgView] = useState(false);
 
   const { checkboxes, toggleCheckbox } = useCheckboxes({
     count: q.data?.data?.imgs.length || 0,
@@ -57,6 +53,15 @@ const page = () => {
 
     setSelectImgToCollectionStatus(SelectImgToCollectionStatus.adding);
   };
+
+  useEventListener("keydown", (e) => {
+    if (
+      e.key === "Enter" &&
+      selectImgToCollectionStatus === SelectImgToCollectionStatus.selecting
+    ) {
+      toggleCheckbox(curImgIndex);
+    }
+  });
 
   if (q.isLoading) {
     return <div>Loading...</div>;
@@ -105,7 +110,7 @@ const page = () => {
 
               <img
                 onClick={() => {
-                  setSingleImgIndex(index);
+                  setCurImgIndex(index);
                   setIsSingleImgView(true);
                 }}
                 className="object-cover w-full h-full"
@@ -119,33 +124,69 @@ const page = () => {
       </div>
 
       {isSingleImgView && (
-        <section>
-          <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black select-none">
-            <div className="flex flex-col w-full h-full">
-              <div className=" text-white">
-                <p>{` (${singleImgIndex + 1} / ${q.data?.data?.imgs.length}) `}</p>
+        <SingleImg
+          curImgIndex={curImgIndex}
+          setCurImgIndex={setCurImgIndex}
+          imgUrls={q.data?.data?.imgs.map((img) => img.url) || []}
+          handleClose={() => setIsSingleImgView(false)}
+          TopBar={
+            selectImgToCollectionStatus >=
+              SelectImgToCollectionStatus.selecting && (
+              <div className="w-5 h-5 flex items-center">
+                <input
+                  type="checkbox"
+                  className=" w-full h-full"
+                  checked={checkboxes[curImgIndex]}
+                  onChange={() => toggleCheckbox(curImgIndex)}
+                />
               </div>
+            )
+          }
+        />
 
-              <img
-                onClick={() => setIsSingleImgView(false)}
-                className="object-contain w-full h-full"
-                src={q.data?.data?.imgs[singleImgIndex].url}
-                alt=""
-                loading="lazy"
-              />
-            </div>
+        // <section>
+        //   <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black select-none">
+        //     <div className="absolute top-0 left-0 w-full h-full flex flex-col py-2">
+        //       <img
+        //         onClick={() => setIsSingleImgView(false)}
+        //         className="object-contain w-full h-full"
+        //         src={q.data?.data?.imgs[singleImgIndex].url}
+        //         alt=""
+        //         loading="lazy"
+        //       />
+        //     </div>
 
-            <div
-              onClick={prevImg}
-              className="absolute top-0 left-0 h-full w-48 text-white flex justify-center items-center cursor-pointer"
-            >{`<<<`}</div>
+        //     <div
+        //       onClick={prevImg}
+        //       className="absolute top-0 left-0 h-full w-48 text-white flex justify-center items-center cursor-pointer"
+        //     >{`<<<`}</div>
 
-            <div
-              onClick={nextImg}
-              className="absolute top-0 right-0 h-full w-48 text-white flex justify-center items-center cursor-pointer"
-            >{`>>>`}</div>
-          </div>
-        </section>
+        //     <div
+        //       onClick={nextImg}
+        //       className="absolute top-0 right-0 h-full w-48 text-white flex justify-center items-center cursor-pointer"
+        //     >{`>>>`}</div>
+
+        //     <div className="absolute top-0 left-0 w-full flex flex-col py-2">
+        //       <div className="flex text-white items-center gap-4">
+        // <p>{` (${singleImgIndex + 1} / ${q.data?.data?.imgs.length}) `}</p>
+        // {selectImgToCollectionStatus >=
+        //   SelectImgToCollectionStatus.selecting && (
+        //   <div className="w-5 h-5 flex items-center">
+        //     <input
+        //       type="checkbox"
+        //       className=" w-full h-full"
+        //       checked={checkboxes[singleImgIndex]}
+        //       onChange={() => toggleCheckbox(singleImgIndex)}
+        //     />
+        //   </div>
+        // )}
+        //         {/* <button className="pl-8" onClick={(e) => e.stopPropagation()}>
+        //           Play
+        //         </button> */}
+        //       </div>
+        //     </div>
+        //   </div>
+        // </section>
       )}
 
       {selectImgToCollectionStatus === SelectImgToCollectionStatus.adding && (

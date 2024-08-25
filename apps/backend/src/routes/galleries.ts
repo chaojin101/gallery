@@ -1,5 +1,6 @@
 import { Value } from "@sinclair/typebox/value";
 import Elysia from "elysia";
+import { GallerySQL } from "../db/sql";
 import { authPlugin } from "../plugins";
 import { GalleryService } from "../service/gallery";
 import { ImgService } from "../service/img";
@@ -47,21 +48,13 @@ export const galleriesRoute = new Elysia({ prefix: "/v1/galleries" })
       const { limit = 10, page = 1 } = query;
       const resp = Value.Create(getLatestGalleriesRespBodySchema);
 
-      const galleries = await GalleryService.getLatestGallery({
+      resp.data.galleries = await GallerySQL.getLastest({
+        page: page,
         limit: limit,
-        offset: (page - 1) * limit,
       });
+      resp.data.totalCount = await GallerySQL.getTotalAmount();
 
       resp.base.success = true;
-      resp.galleries = galleries.map((gallery) => {
-        return {
-          g: {
-            ...gallery,
-            imgs: undefined,
-          },
-          imgs: gallery.imgs,
-        };
-      });
       return resp;
     },
     {

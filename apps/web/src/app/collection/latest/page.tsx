@@ -1,25 +1,30 @@
 "use client";
 
 import { backend } from "@/backend";
-import MyPagination from "@/components/my/my-pagination";
+import { MyPagination } from "@/components/my/my-pagination";
 import { usePageSearchParams } from "@/use-hooks/use-page-search-params";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 
 const page = () => {
-  const { page, setPage, pageArr } = usePageSearchParams();
+  const pageLimit = 2;
+  const { page, setPage } = usePageSearchParams();
 
   const q = useQuery({
     queryKey: ["query latest collection", page],
     queryFn: async () => {
       return await backend.api.v1.collections.latest.get({
         query: {
-          limit: 12,
+          limit: pageLimit,
           page: page,
         },
       });
     },
   });
+
+  const totalPages = Math.ceil(
+    (q.data?.data?.data.totalCount || 0) / pageLimit
+  );
 
   if (q.isLoading) {
     return <div>Loading...</div>;
@@ -44,7 +49,7 @@ const page = () => {
           </Link>
         ))}
       </div>
-      <MyPagination page={page} setPage={setPage} pageArr={pageArr} />
+      <MyPagination page={page} setPage={setPage} totalPages={totalPages} />
     </>
   );
 };

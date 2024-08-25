@@ -1,3 +1,5 @@
 - [x] feat: web display get latest collections
 - [x] feat: backend get specific collection
 - [x] feat: web display get specific collection
+- [x] feat: web add animation to specific gallery
+- [ ] feat: in web, collection id page, make slideshow for images

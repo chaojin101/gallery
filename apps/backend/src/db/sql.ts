@@ -6,7 +6,7 @@ import {
   getAddCollectionCardRespBodySchema,
   getCollectionByIdRespBodySchema,
 } from "../types/routes/collections";
-import { collection, collectionImg, img } from "./schema";
+import { collection, collectionImg, gallery, galleryImg, img } from "./schema";
 
 export class SQL {
   static async getAddCollectionCard(options: {
@@ -62,23 +62,6 @@ export class SQL {
     );
   }
 
-  static async getLastestCollections(options: { page: number; limit: number }) {
-    const result = await defaultDb
-      .select({
-        id: collection.id,
-        imgUrl: img.url,
-      })
-      .from(collection)
-      .innerJoin(collectionImg, eq(collectionImg.collectionId, collection.id))
-      .innerJoin(img, eq(collectionImg.imgId, img.id))
-      .where(eq(collectionImg.order, 0))
-      .orderBy(asc(collection.createdAt))
-      .offset((options.page - 1) * options.limit)
-      .limit(options.limit);
-
-    return result;
-  }
-
   static async getCollectionById(options: {
     id: string;
   }): Promise<Static<
@@ -115,5 +98,62 @@ export class SQL {
     }));
 
     return r;
+  }
+}
+
+export class CollectionSQL {
+  static async getTotalCount(options?: {}) {
+    const result = await defaultDb
+      .select({ count: count() })
+      .from(collection)
+      .innerJoin(collectionImg, eq(collectionImg.collectionId, collection.id))
+      .where(eq(collectionImg.order, 0));
+
+    return result[0].count;
+  }
+  static async getLastest(options: { page: number; limit: number }) {
+    const result = await defaultDb
+      .select({
+        id: collection.id,
+        imgUrl: img.url,
+      })
+      .from(collection)
+      .innerJoin(collectionImg, eq(collectionImg.collectionId, collection.id))
+      .innerJoin(img, eq(collectionImg.imgId, img.id))
+      .where(eq(collectionImg.order, 0))
+      .orderBy(asc(collection.createdAt))
+      .offset((options.page - 1) * options.limit)
+      .limit(options.limit);
+
+    return result;
+  }
+}
+
+export class GallerySQL {
+  static async getTotalAmount(options?: {}) {
+    const result = await defaultDb
+      .select({ count: count() })
+      .from(gallery)
+      .innerJoin(galleryImg, eq(galleryImg.galleryId, gallery.id))
+      .where(eq(galleryImg.order, 0));
+
+    return result[0].count;
+  }
+
+  static async getLastest(options: { page: number; limit: number }) {
+    const result = await defaultDb
+      .select({
+        id: gallery.id,
+        imgUrl: img.url,
+      })
+      .from(gallery)
+      .innerJoin(galleryImg, eq(galleryImg.galleryId, gallery.id))
+      .innerJoin(img, eq(galleryImg.imgId, img.id))
+      .where(eq(galleryImg.order, 0))
+      .orderBy(asc(gallery.createdAt))
+      .offset((options.page - 1) * options.limit)
+      .limit(options.limit);
+
+    return result;
   }
 }

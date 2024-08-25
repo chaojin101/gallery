@@ -34,12 +34,15 @@ export const getLatestGalleriesReqQuerySchema = t.Object({
 
 export const getLatestGalleriesRespBodySchema = t.Object({
   base: baseRespSchema,
-  galleries: t.Array(
-    t.Object({
-      g: gallerySchema,
-      imgs: t.Array(imgSchema),
-    })
-  ),
+  data: t.Object({
+    totalCount: t.Number(),
+    galleries: t.Array(
+      t.Object({
+        id: t.String(),
+        imgUrl: t.String(),
+      })
+    ),
+  }),
 });
 
 export const MSG_GALLERY_NAME_EXIST = "Gallery name already exists";

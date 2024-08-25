@@ -1,10 +1,11 @@
 "use client";
 
 import { backend } from "@/backend";
+import { SingleImg } from "@/components/my/single-img";
 
-import { useSingleImgView } from "@/use-hooks/use-single-img-view";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
+import { useState } from "react";
 
 const page = () => {
   const params = useParams<{ collectionId: string }>();
@@ -18,16 +19,8 @@ const page = () => {
     },
   });
 
-  const {
-    isSingleImgView,
-    setIsSingleImgView,
-    singleImgIndex,
-    setSingleImgIndex,
-    nextImg,
-    prevImg,
-  } = useSingleImgView({
-    imgCount: q.data?.data?.data.collection.imgs.length || 0,
-  });
+  const [curImgIndex, setCurImgIndex] = useState(0);
+  const [isSingleImgView, setIsSingleImgView] = useState(false);
 
   if (q.isLoading) {
     return <div>Loading...</div>;
@@ -53,7 +46,7 @@ const page = () => {
             >
               <img
                 onClick={() => {
-                  setSingleImgIndex(index);
+                  setCurImgIndex(index);
                   setIsSingleImgView(true);
                 }}
                 className="object-cover w-full h-full"
@@ -67,33 +60,14 @@ const page = () => {
       </div>
 
       {isSingleImgView && (
-        <section>
-          <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black select-none">
-            <div className="flex flex-col w-full h-full">
-              <div className=" text-white">
-                <p>{` (${singleImgIndex + 1} / ${q.data?.data?.data.collection.imgs.length}) `}</p>
-              </div>
-
-              <img
-                onClick={() => setIsSingleImgView(false)}
-                className="object-contain w-full h-full"
-                src={q.data?.data?.data.collection.imgs[singleImgIndex].url}
-                alt=""
-                loading="lazy"
-              />
-            </div>
-
-            <div
-              onClick={prevImg}
-              className="absolute top-0 left-0 h-full w-48 text-white flex justify-center items-center cursor-pointer"
-            >{`<<<`}</div>
-
-            <div
-              onClick={nextImg}
-              className="absolute top-0 right-0 h-full w-48 text-white flex justify-center items-center cursor-pointer"
-            >{`>>>`}</div>
-          </div>
-        </section>
+        <SingleImg
+          curImgIndex={curImgIndex}
+          setCurImgIndex={setCurImgIndex}
+          imgUrls={
+            q.data?.data?.data.collection.imgs.map((img) => img.url) || []
+          }
+          handleClose={() => setIsSingleImgView(false)}
+        />
       )}
     </>
   );
