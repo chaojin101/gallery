@@ -1,5 +1,5 @@
 import { Value } from "@sinclair/typebox/value";
-import { asc, count, eq } from "drizzle-orm";
+import { asc, count, desc, eq } from "drizzle-orm";
 import { Static } from "elysia";
 import { defaultDb } from ".";
 import {
@@ -150,7 +150,7 @@ export class GallerySQL {
       .innerJoin(galleryImg, eq(galleryImg.galleryId, gallery.id))
       .innerJoin(img, eq(galleryImg.imgId, img.id))
       .where(eq(galleryImg.order, 0))
-      .orderBy(asc(gallery.createdAt))
+      .orderBy(desc(gallery.createdAt))
       .offset((options.page - 1) * options.limit)
       .limit(options.limit);
 

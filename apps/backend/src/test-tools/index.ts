@@ -1,7 +1,7 @@
 import { treaty } from "@elysiajs/eden";
-import { app } from "index";
 import jwt from "jsonwebtoken";
-import { JWTPayload } from "types/routes/users";
+import { app } from "../index";
+import { JWTPayload } from "../types/routes/users";
 
 export const backend = treaty(app);
 

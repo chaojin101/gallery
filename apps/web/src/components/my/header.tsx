@@ -22,8 +22,8 @@ export const Header = () => {
             </>
           ) : (
             <>
-              <Link href={"/auth/login"}>Login</Link>
-              <Link href={"/auth/register"}>Register</Link>
+              {/* <Link href={"/auth/login"}>Login</Link>
+              <Link href={"/auth/register"}>Register</Link> */}
             </>
           )}
         </div>

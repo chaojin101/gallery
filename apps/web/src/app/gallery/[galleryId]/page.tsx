@@ -5,6 +5,7 @@ import { AddCollectionCard } from "@/components/my/add-collection-card";
 import { SingleImg } from "@/components/my/single-img";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
+import { useAuth } from "@/context/useAuth";
 
 import { useCheckboxes } from "@/use-hooks/use-checkboxes";
 import {
@@ -63,6 +64,8 @@ const page = () => {
     }
   });
 
+  const { tokenPayload } = useAuth();
+
   if (q.isLoading) {
     return <div>Loading...</div>;
   }
@@ -79,9 +82,12 @@ const page = () => {
         </h1>
 
         <section className="flex gap-2">
-          <Button onClick={toggleSelectImgToCollection}>
-            Select imgs to collection
-          </Button>
+          {tokenPayload && (
+            <Button onClick={toggleSelectImgToCollection}>
+              Select imgs to collection
+            </Button>
+          )}
+
           {selectImgToCollectionStatus >=
             SelectImgToCollectionStatus.selecting && (
             <Button onClick={handleAddSelectedImgsToCollectionBtn}>
@@ -143,50 +149,6 @@ const page = () => {
             )
           }
         />
-
-        // <section>
-        //   <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black select-none">
-        //     <div className="absolute top-0 left-0 w-full h-full flex flex-col py-2">
-        //       <img
-        //         onClick={() => setIsSingleImgView(false)}
-        //         className="object-contain w-full h-full"
-        //         src={q.data?.data?.imgs[singleImgIndex].url}
-        //         alt=""
-        //         loading="lazy"
-        //       />
-        //     </div>
-
-        //     <div
-        //       onClick={prevImg}
-        //       className="absolute top-0 left-0 h-full w-48 text-white flex justify-center items-center cursor-pointer"
-        //     >{`<<<`}</div>
-
-        //     <div
-        //       onClick={nextImg}
-        //       className="absolute top-0 right-0 h-full w-48 text-white flex justify-center items-center cursor-pointer"
-        //     >{`>>>`}</div>
-
-        //     <div className="absolute top-0 left-0 w-full flex flex-col py-2">
-        //       <div className="flex text-white items-center gap-4">
-        // <p>{` (${singleImgIndex + 1} / ${q.data?.data?.imgs.length}) `}</p>
-        // {selectImgToCollectionStatus >=
-        //   SelectImgToCollectionStatus.selecting && (
-        //   <div className="w-5 h-5 flex items-center">
-        //     <input
-        //       type="checkbox"
-        //       className=" w-full h-full"
-        //       checked={checkboxes[singleImgIndex]}
-        //       onChange={() => toggleCheckbox(singleImgIndex)}
-        //     />
-        //   </div>
-        // )}
-        //         {/* <button className="pl-8" onClick={(e) => e.stopPropagation()}>
-        //           Play
-        //         </button> */}
-        //       </div>
-        //     </div>
-        //   </div>
-        // </section>
       )}
 
       {selectImgToCollectionStatus === SelectImgToCollectionStatus.adding && (

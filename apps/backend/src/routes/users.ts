@@ -47,6 +47,7 @@ export const usersRoute = new Elysia({ prefix: "/v1/users" })
     "/sign-in",
     async ({ body, jwt }) => {
       const { email, password } = body;
+      console.log(body);
 
       const resp = Value.Create(SignRespSchema);
 
