@@ -17,7 +17,7 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import { useEventListener } from "usehooks-ts";
 
-const page = () => {
+const Page = () => {
   const params = useParams<{ galleryId: string }>();
 
   const q = useQuery({
@@ -169,4 +169,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

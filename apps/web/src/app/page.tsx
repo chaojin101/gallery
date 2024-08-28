@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 
-const page = () => {
+const Page = () => {
   redirect("/gallery/latest");
   return <div>page</div>;
 };
 
-export default page;
+export default Page;

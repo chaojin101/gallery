@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
-const page = () => {
+const Page = () => {
   const params = useParams<{ collectionId: string }>();
 
   const q = useQuery({
@@ -73,4 +73,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

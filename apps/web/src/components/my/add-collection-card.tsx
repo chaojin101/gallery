@@ -14,16 +14,11 @@ type Props = {
 export const AddCollectionCard = (props: Props) => {
   const { authHeader } = useAuth();
 
-  if (!authHeader) {
-    console.log("not authenticated");
-    return null;
-  }
-
   const q = useQuery({
     queryKey: [QUERY_KEY.ADD_COLLECTION_CARD],
     queryFn: async () => {
       return await backend.api.v1.collections.addCollectionCard.get({
-        headers: authHeader,
+        headers: authHeader || { authorization: "" },
       });
     },
   });
@@ -36,10 +31,15 @@ export const AddCollectionCard = (props: Props) => {
     }) => {
       return await backend.api.v1.collections.appendToCollection.post(
         { ...options },
-        { headers: authHeader }
+        { headers: authHeader || { authorization: "" } }
       );
     },
   });
+
+  if (!authHeader) {
+    console.log("not authenticated");
+    return null;
+  }
 
   console.log(props);
 

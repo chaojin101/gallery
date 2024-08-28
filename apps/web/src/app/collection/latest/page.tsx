@@ -6,7 +6,7 @@ import { usePageSearchParams } from "@/use-hooks/use-page-search-params";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 
-const page = () => {
+const Page = () => {
   const pageLimit = 2;
   const { page, setPage } = usePageSearchParams();
 
@@ -54,4 +54,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
