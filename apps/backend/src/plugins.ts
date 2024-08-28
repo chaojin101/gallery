@@ -1,12 +1,12 @@
 import jwt from "@elysiajs/jwt";
 import { Value } from "@sinclair/typebox/value";
 import Elysia from "elysia";
-import { addGalleryRespBodySchema } from "types/routes/galleries";
-import { JWTPayloadSchema, MSG_UNAUTHORIZED } from "types/routes/users";
+import { addGalleryRespBodySchema } from "./types/routes/galleries";
+import { JWTPayloadSchema, MSG_UNAUTHORIZED } from "./types/routes/users";
 
 export const JWTPlugin = jwt({
   name: "jwt",
-  secret: process.env.JWT_SECRET,
+  secret: process.env.JWT_SECRET!,
   schema: JWTPayloadSchema,
 });
 

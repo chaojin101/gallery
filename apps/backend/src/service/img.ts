@@ -1,6 +1,6 @@
-import { DB, defaultDb } from "db";
-import { galleryImg, img } from "db/schema";
 import { desc, eq } from "drizzle-orm";
+import { DB, defaultDb } from "../db";
+import { galleryImg, img } from "../db/schema";
 
 export class ImgService {
   static async getNextImgOrderByGalleryId(galleryId: string) {

@@ -7,6 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts",
+    "start": "NODE_ENV=production bun src/index.ts",
     "migrate": "drizzle-kit push",
     "script:index": "bun run src/scripts/index.ts"
   },

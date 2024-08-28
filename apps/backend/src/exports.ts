@@ -5,4 +5,4 @@ type App = typeof app;
 export { SignReqSchema } from "./types/routes/users";
 export type { JWTPayload } from "./types/routes/users";
 
-export { App };
+export type { App };
