@@ -1,13 +1,72 @@
-## setup
+## Development setup
+
+### Backend
+
+```sh
+cd apps/backend
+```
+
+#### Set env variables
+
+```sh
+cp .env.example .env
+```
+
+Set the env variable in `.env` file.
+
+#### Migrate database
 
 ```sh
 bun i
+bun run migrate
 ```
 
-## the problem
+#### Run
 
-in `./apps/web/src/api.ts` the `App` type is `any`
+```sh
+bun dev
+```
 
-but in `./apps/backend/src/exports.ts` the `App` type is not `any`
+### Web
 
-i can't type the `treaty`
+```sh
+cd apps/web
+```
+
+#### Set env variables
+
+```sh
+cp .env.example .env
+```
+
+Set the env variable in `.env` file.
+
+#### Run
+
+```sh
+bun i
+bun dev
+```
+
+## Production setup
+
+### Backend
+
+Go through the steps in development setup before `Run` step.
+
+#### Run
+
+```sh
+bun run start
+```
+
+### Web
+
+Go through the steps in development setup before `Run` step.
+
+#### Run
+
+```sh
+bun run build
+bun run start
+```
