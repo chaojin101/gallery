@@ -5,6 +5,9 @@ import { Elysia } from "elysia";
 import { collectionsRoute } from "./routes/collections";
 import { galleriesRoute } from "./routes/galleries";
 import { usersRoute } from "./routes/users";
+import { setupEnv } from "./util";
+
+setupEnv();
 
 const myLogger = logger({
   transport: {
@@ -23,7 +26,7 @@ export const app = new Elysia({ prefix: "/api" })
   .use(galleriesRoute)
   .use(collectionsRoute)
   .get("", ({}) => "Hello, world!")
-  .listen(3000);
+  .listen(process.env.PORT);
 
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
