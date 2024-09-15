@@ -1,15 +1,9 @@
-import { treaty } from "@elysiajs/eden";
-import jwt from "jsonwebtoken";
-import { app } from "../index";
-import { JWTPayload } from "../types/routes/users";
+import { faker } from "@faker-js/faker";
 
-export const backend = treaty(app);
+export const randomUUID = () => faker.string.uuid();
 
-export const decodeToken = (token: string) => {
-  if (!token) {
-    throw new Error("token not found");
-  }
+export const randomInt = (options: { min?: number; max?: number } = {}) => {
+  const { min = 1, max = 10 } = options;
 
-  const decoded = jwt.decode(token, { complete: true, json: true });
-  return decoded?.payload as JWTPayload & jwt.Jwt;
+  return faker.number.int({ min, max });
 };

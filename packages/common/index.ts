@@ -1,12 +1,1 @@
-export const PASSWORD_MIN_LENGTH = 6;
-export const PASSWORD_MAX_LENGTH = 20;
-
-export const GALLERY_NAME_MIN_LENGTH = 1;
-export const GALLERY_NAME_MAX_LENGTH = 100;
-export const GALLERY_DESCRIPTION_MIN_LENGTH = 0;
-export const GALLERY_DESCRIPTION_MAX_LENGTH = 1000;
-
-export const COLLECTION_NAME_MIN_LENGTH = 1;
-export const COLLECTION_NAME_MAX_LENGTH = 100;
-export const COLLECTION_DESCRIPTION_MIN_LENGTH = 0;
-export const COLLECTION_DESCRIPTION_MAX_LENGTH = 1000;
+export * from "./route";

@@ -1,30 +1,52 @@
+import {
+  GALLERY_DESCRIPTION_MAX_LENGTH,
+  GALLERY_DESCRIPTION_MIN_LENGTH,
+  GALLERY_NAME_MAX_LENGTH,
+  GALLERY_NAME_MIN_LENGTH,
+} from "@gallery/common";
+import { createSelectSchema } from "drizzle-typebox";
 import { t } from "elysia";
 import { baseRespSchema } from ".";
-import { gallerySchema, imgSchema } from "../../db/schema";
+import { gallery, img } from "../../db/schema";
+
+const galleryNameSchema = t.String({
+  minLength: GALLERY_NAME_MIN_LENGTH,
+  maxLength: GALLERY_NAME_MAX_LENGTH,
+});
+const galleryDescriptionSchema = t.String({
+  minLength: GALLERY_DESCRIPTION_MIN_LENGTH,
+  maxLength: GALLERY_DESCRIPTION_MAX_LENGTH,
+});
+
+export const gallerySchema = createSelectSchema(gallery, {
+  createdAt: t.Number(),
+  updatedAt: t.Number(),
+});
 
 export const addGalleryReqBodySchema = t.Object({
-  name: t.String({ minLength: 1, maxLength: 100 }),
-  description: t.String({ minLength: 0, maxLength: 1000 }),
+  name: galleryNameSchema,
+  description: galleryDescriptionSchema,
 });
 
 export const addGalleryRespBodySchema = t.Object({
   base: baseRespSchema,
-  gallery: gallerySchema,
+  data: t.Object({ gallery: gallerySchema }),
 });
 
+export const imgSchema = createSelectSchema(img);
+
 export const appendImgToGalleryReqBodySchema = t.Object({
-  urls: t.Array(t.String({ minLength: 1, maxLength: 1000, format: "uri" })),
+  urls: t.Array(t.String({ minLength: 1, maxLength: 2000, format: "uri" })),
 });
 
 export const appendImgGalleryRespBodySchema = t.Object({
   base: baseRespSchema,
-  gallery: gallerySchema,
+  data: t.Object({ gallery: gallerySchema, imgs: t.Array(imgSchema) }),
 });
 
 export const getGalleryByIdRespBodySchema = t.Object({
   base: baseRespSchema,
-  gallery: gallerySchema,
-  imgs: t.Array(imgSchema),
+  data: t.Object({ gallery: gallerySchema, imgs: t.Array(imgSchema) }),
 });
 
 export const getLatestGalleriesReqQuerySchema = t.Object({
@@ -38,12 +60,9 @@ export const getLatestGalleriesRespBodySchema = t.Object({
     totalCount: t.Number(),
     galleries: t.Array(
       t.Object({
-        id: t.String(),
-        imgUrl: t.String(),
+        galleryId: t.String(),
+        firstImgUrl: t.String(),
       })
     ),
   }),
 });
-
-export const MSG_GALLERY_NAME_EXIST = "Gallery name already exists";
-export const MSG_GALLERY_NOT_FOUND = "Gallery not found";

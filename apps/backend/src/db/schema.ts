@@ -23,7 +23,6 @@ export const user = pgTable("user", {
     .notNull()
     .defaultNow(),
 });
-export type User = typeof user.$inferSelect;
 
 export const userRelations = relations(user, ({ many }) => ({
   galleries: many(gallery),
@@ -42,8 +41,6 @@ export const gallery = pgTable("gallery", {
     .notNull()
     .defaultNow(),
 });
-export type Gallery = typeof gallery.$inferSelect;
-export const gallerySchema = createSelectSchema(gallery);
 
 export const galleryRelations = relations(gallery, ({ one, many }) => ({
   user: one(user, {
@@ -57,8 +54,6 @@ export const img = pgTable("img", {
   id: uuid("id").primaryKey().defaultRandom(),
   url: text("url").notNull(),
 });
-export type Img = typeof img.$inferSelect;
-export const imgSchema = createSelectSchema(img);
 
 export const imgRelations = relations(img, ({ one, many }) => ({
   galleryImgs: many(galleryImg),
@@ -75,7 +70,6 @@ export const galleryImg = pgTable(
     pk: primaryKey({ columns: [table.galleryId, table.imgId, table.order] }),
   })
 );
-export type GalleryImg = typeof galleryImg.$inferSelect;
 
 export const galleryImgRelations = relations(galleryImg, ({ one, many }) => ({
   gallery: one(gallery, {

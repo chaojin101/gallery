@@ -1,26 +1,45 @@
+import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from "@gallery/common";
 import { Static, t } from "elysia";
 import { baseRespSchema } from ".";
 
-export const SignReqSchema = t.Object({
-  email: t.String({ format: "email" }),
-  password: t.String({
-    minLength: 6,
-    maxLength: 20,
+const emailSchema = t.String({ format: "email" });
+const passwordSchema = t.String({
+  minLength: PASSWORD_MIN_LENGTH,
+  maxLength: PASSWORD_MAX_LENGTH,
+});
+const tokenSchema = t.String();
+const userSchema = t.Object({
+  id: t.String(),
+  email: t.String(),
+  name: t.String(),
+  verified: t.Boolean(),
+  createdAt: t.Number(),
+  updatedAt: t.Number(),
+});
+
+export const SignUpReqBodySchema = t.Object({
+  email: emailSchema,
+  password: passwordSchema,
+});
+
+export const SignUpRespBodySchema = t.Object({
+  base: baseRespSchema,
+  data: t.Object({
+    token: tokenSchema,
+    user: userSchema,
   }),
 });
 
-export const SignRespSchema = t.Object({
+export const SignInReqBodySchema = t.Object({
+  email: emailSchema,
+  password: passwordSchema,
+});
+
+export const SignInRespBodySchema = t.Object({
   base: baseRespSchema,
   data: t.Object({
-    token: t.String(),
-    user: t.Object({
-      id: t.String(),
-      email: t.String(),
-      name: t.String(),
-      verified: t.Boolean(),
-      createdAt: t.Date(),
-      updatedAt: t.Date(),
-    }),
+    token: tokenSchema,
+    user: userSchema,
   }),
 });
 
@@ -30,11 +49,3 @@ export const JWTPayloadSchema = t.Object({
   name: t.String(),
 });
 export type JWTPayload = Static<typeof JWTPayloadSchema>;
-
-export const authHeaderSchema = t.Object({
-  authorization: t.String(),
-});
-
-export const MSG_EMAIL_EXISTS = "Email already exists";
-export const MSG_INVALID_EMAIL_OR_PASSWORD = "Invalid email or password";
-export const MSG_UNAUTHORIZED = "Unauthorized";

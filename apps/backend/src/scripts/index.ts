@@ -1,10 +1,14 @@
+import { treaty } from "@elysiajs/eden";
 import got from "got";
 import parse from "node-html-parser";
-import { backend } from "test-tools";
+import { app } from "../index";
+
+export const backend = treaty<typeof app>("https://api.girli.xyz");
 
 const main = async () => {
-  const url =
-    "https://telegra.ph/%E9%98%BF%E5%8C%85%E4%B9%9F%E6%98%AF%E5%85%94%E5%A8%98-%E5%8A%A0%E5%86%95%E5%9B%BE-%E4%BC%98%E8%8F%88-28P-536MB-08-25";
+  const url = `
+https://telegra.ph/Quan%E5%86%89%E6%9C%89%E7%82%B9%E9%A5%BF-%E7%BA%B3%E8%A5%BF%E5%A6%B2-46P-06-13
+`;
 
   const { name, imgUrls } = await parseCosPlayNSFWTelegrahUrl({ url });
 
@@ -27,8 +31,8 @@ const parseCosPlayNSFWTelegrahUrl = async (options: { url: string }) => {
 
 const addGallery = async (options: { name: string; urls: string[] }) => {
   const r1 = await backend.api.v1.users["sign-in"].post({
-    email: "x@x.com",
-    password: "666666",
+    email: "chaojin101@gmail.com",
+    password: "111111",
   });
 
   const token = r1.data?.data.token;
@@ -36,20 +40,19 @@ const addGallery = async (options: { name: string; urls: string[] }) => {
     console.error("Failed to get token");
     process.exit(1);
   }
-  const authorization = `Bearer ${token}`;
 
-  const r2 = await backend.api.v1.galleries.index.post(
+  const r2 = await backend.api.v1.galleries.post(
     {
       name: options.name,
       description: "",
     },
     {
       headers: {
-        authorization,
+        Authorization: `Bearer ${token}`,
       },
     }
   );
-  const gid = r2.data?.gallery.id;
+  const gid = r2.data?.data.gallery.id;
   if (!gid) {
     console.error("Failed to create gallery");
     process.exit(1);
@@ -57,7 +60,10 @@ const addGallery = async (options: { name: string; urls: string[] }) => {
 
   const r3 = await backend.api.v1
     .galleries({ id: gid })
-    .append.post({ urls: options.urls }, { headers: { authorization } });
+    .append.post(
+      { urls: options.urls },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
 };
 
 main();

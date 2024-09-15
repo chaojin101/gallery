@@ -1,12 +1,17 @@
-import { Value } from "@sinclair/typebox/value";
-import Elysia from "elysia";
-import { JWTPlugin } from "../plugins";
-import { UserService } from "../service/user";
 import {
   MSG_EMAIL_EXISTS,
   MSG_INVALID_EMAIL_OR_PASSWORD,
-  SignReqSchema,
-  SignRespSchema,
+} from "@gallery/common";
+import { Value } from "@sinclair/typebox/value";
+import Elysia from "elysia";
+import { addUserToDB, getUserByEmailFromDB } from "../db/sqls/user";
+import { Password } from "../libs/password";
+import { JWTPlugin } from "../plugins";
+import {
+  SignInReqBodySchema,
+  SignInRespBodySchema,
+  SignUpReqBodySchema,
+  SignUpRespBodySchema,
 } from "../types/routes/users";
 
 export const usersRoute = new Elysia({ prefix: "/v1/users" })
@@ -14,18 +19,19 @@ export const usersRoute = new Elysia({ prefix: "/v1/users" })
   .post(
     "/sign-up",
     async ({ body, jwt }) => {
-      const resp = Value.Create(SignRespSchema);
+      const resp = Value.Create(SignUpRespBodySchema);
 
       const { email, password } = body;
 
-      if (await UserService.isEmailTaken(email)) {
+      let user = await getUserByEmailFromDB({ email });
+      if (user !== undefined) {
         resp.base.msg = MSG_EMAIL_EXISTS;
         return resp;
       }
 
-      const hashedPassword = await UserService.hashPassword(password);
+      const hashedPassword = await Password.hash({ password });
 
-      const user = await UserService.addUser({ email, hashedPassword });
+      user = await addUserToDB({ email, hashedPassword });
 
       const token = await jwt.sign({
         email: user.email,
@@ -36,28 +42,39 @@ export const usersRoute = new Elysia({ prefix: "/v1/users" })
       resp.base.success = true;
       resp.data.token = token;
 
+      resp.data.user.id = user.id;
+      resp.data.user.email = user.email;
+      resp.data.user.name = user.name;
+      resp.data.user.verified = user.verified;
+      resp.data.user.createdAt = user.createdAt.getTime();
+      resp.data.user.updatedAt = user.updatedAt.getTime();
+
       return resp;
     },
     {
-      body: SignReqSchema,
-      response: SignRespSchema,
+      body: SignUpReqBodySchema,
+      response: SignUpRespBodySchema,
     }
   )
   .post(
     "/sign-in",
     async ({ body, jwt }) => {
       const { email, password } = body;
-      console.log(body);
 
-      const resp = Value.Create(SignRespSchema);
+      const resp = Value.Create(SignInRespBodySchema);
 
-      const user = await UserService.getUserByEmail(email);
+      const user = await getUserByEmailFromDB({ email });
       if (!user) {
         resp.base.msg = MSG_INVALID_EMAIL_OR_PASSWORD;
         return resp;
       }
 
-      if (!(await UserService.comparePassword(password, user.hashedPassword))) {
+      if (
+        !(await Password.compare({
+          password,
+          hashedPassword: user.hashedPassword,
+        }))
+      ) {
         resp.base.msg = MSG_INVALID_EMAIL_OR_PASSWORD;
         return resp;
       }
@@ -69,12 +86,19 @@ export const usersRoute = new Elysia({ prefix: "/v1/users" })
       });
 
       resp.base.success = true;
+
       resp.data.token = token;
+      resp.data.user.id = user.id;
+      resp.data.user.email = user.email;
+      resp.data.user.name = user.name;
+      resp.data.user.verified = user.verified;
+      resp.data.user.createdAt = user.createdAt.getTime();
+      resp.data.user.updatedAt = user.updatedAt.getTime();
 
       return resp;
     },
     {
-      body: SignReqSchema,
-      response: SignRespSchema,
+      body: SignInReqBodySchema,
+      response: SignInRespBodySchema,
     }
   );

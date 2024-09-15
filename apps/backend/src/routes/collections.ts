@@ -3,6 +3,7 @@ import Elysia from "elysia";
 import { CollectionSQL, SQL } from "../db/sql";
 import { authPlugin } from "../plugins";
 import { CollectionService } from "../service/collection";
+import { authHeaderSchema } from "../types/routes/auth";
 import {
   addCollectionReqBodySchema,
   addCollectionRespBodySchema,
@@ -14,7 +15,6 @@ import {
   getLatestCollectionsRespBodySchema,
   MSG_COLLECTION_NAME_EXIST,
 } from "../types/routes/collections";
-import { authHeaderSchema } from "../types/routes/users";
 
 export const collectionsRoute = new Elysia({ prefix: "/v1/collections" })
   .get(

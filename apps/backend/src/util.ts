@@ -4,7 +4,9 @@ export const setupEnv = () => {
   }
   if (
     !process.env.NODE_ENV ||
-    (process.env.NODE_ENV !== "dev" && process.env.NODE_ENV !== "prod")
+    (process.env.NODE_ENV !== "dev" &&
+      process.env.NODE_ENV !== "prod" &&
+      process.env.NODE_ENV !== "test")
   ) {
     throw Error(`'NODE_ENV' must be set to 'dev' or 'prod' in '.env' file`);
   }

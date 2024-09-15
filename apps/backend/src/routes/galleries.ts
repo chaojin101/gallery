@@ -1,9 +1,24 @@
+import {
+  MSG_GALLERY_NAME_EXIST,
+  MSG_GALLERY_NOT_FOUND,
+  MSG_UNAUTHORIZED,
+} from "@gallery/common";
 import { Value } from "@sinclair/typebox/value";
 import Elysia from "elysia";
-import { GallerySQL } from "../db/sql";
+import {
+  appendImgToGallery,
+  getImgsByGalleryId,
+  getLastestGallery,
+} from "../db/sqls";
+import {
+  addGalleryToDB,
+  getGalleryByIdFromDB,
+  getGalleryByNameFromDB,
+  getTotalGalleryAmount,
+} from "../db/sqls/gallery";
+import { IMG_PLACEHOLDER_URL } from "../db/sqls/img";
 import { authPlugin } from "../plugins";
-import { GalleryService } from "../service/gallery";
-import { ImgService } from "../service/img";
+import { authHeaderSchema } from "../types/routes/auth";
 import {
   addGalleryReqBodySchema,
   addGalleryRespBodySchema,
@@ -12,10 +27,7 @@ import {
   getGalleryByIdRespBodySchema,
   getLatestGalleriesReqQuerySchema,
   getLatestGalleriesRespBodySchema,
-  MSG_GALLERY_NAME_EXIST,
-  MSG_GALLERY_NOT_FOUND,
 } from "../types/routes/galleries";
-import { authHeaderSchema, MSG_UNAUTHORIZED } from "../types/routes/users";
 
 export const galleriesRoute = new Elysia({ prefix: "/v1/galleries" })
   .get(
@@ -23,19 +35,26 @@ export const galleriesRoute = new Elysia({ prefix: "/v1/galleries" })
     async ({ params }) => {
       const resp = Value.Create(getGalleryByIdRespBodySchema);
 
-      const gallery = await GalleryService.getGalleryById(params.id);
+      const gallery = await getGalleryByIdFromDB({ id: params.id });
       if (!gallery) {
         resp.base.msg = MSG_GALLERY_NOT_FOUND;
         return resp;
       }
 
-      const imgDBs = await ImgService.getImgByGalleryId({
+      const imgs = await getImgsByGalleryId({
         galleryId: params.id,
       });
 
       resp.base.success = true;
-      resp.gallery = gallery;
-      resp.imgs = imgDBs;
+
+      resp.data.gallery.id = gallery.id;
+      resp.data.gallery.userId = gallery.userId;
+      resp.data.gallery.name = gallery.name;
+      resp.data.gallery.description = gallery.description;
+      resp.data.gallery.createdAt = gallery.createdAt.getTime();
+      resp.data.gallery.updatedAt = gallery.updatedAt.getTime();
+      resp.data.imgs = imgs;
+
       return resp;
     },
     {
@@ -48,13 +67,20 @@ export const galleriesRoute = new Elysia({ prefix: "/v1/galleries" })
       const { limit = 10, page = 1 } = query;
       const resp = Value.Create(getLatestGalleriesRespBodySchema);
 
-      resp.data.galleries = await GallerySQL.getLastest({
-        page: page,
+      const galleries = await getLastestGallery({
+        offset: (page - 1) * limit,
         limit: limit,
       });
-      resp.data.totalCount = await GallerySQL.getTotalAmount();
+      resp.data.totalCount = await getTotalGalleryAmount();
 
       resp.base.success = true;
+
+      resp.data.galleries = galleries.map((gallery) => {
+        return {
+          galleryId: gallery.id,
+          firstImgUrl: gallery.galleryImgs[0]?.img?.url || IMG_PLACEHOLDER_URL,
+        };
+      });
       return resp;
     },
     {
@@ -65,23 +91,32 @@ export const galleriesRoute = new Elysia({ prefix: "/v1/galleries" })
 
   .use(authPlugin)
   .post(
-    "/",
+    "",
     async ({ body, tokenPayload }) => {
       const resp = Value.Create(addGalleryRespBodySchema);
 
-      let gallery = await GalleryService.getGalleryByName(body.name);
+      let gallery = await getGalleryByNameFromDB({
+        name: body.name,
+      });
       if (gallery) {
         resp.base.msg = MSG_GALLERY_NAME_EXIST;
         return resp;
       }
 
-      gallery = await GalleryService.addGallery({
+      gallery = await addGalleryToDB({
         ...body,
         userId: tokenPayload.userId,
       });
 
       resp.base.success = true;
-      resp.gallery = gallery;
+
+      resp.data.gallery.id = gallery.id;
+      resp.data.gallery.userId = gallery.userId;
+      resp.data.gallery.name = gallery.name;
+      resp.data.gallery.description = gallery.description;
+      resp.data.gallery.createdAt = gallery.createdAt.getTime();
+      resp.data.gallery.updatedAt = gallery.updatedAt.getTime();
+
       return resp;
     },
     {
@@ -95,7 +130,7 @@ export const galleriesRoute = new Elysia({ prefix: "/v1/galleries" })
     async ({ params, body, tokenPayload }) => {
       const resp = Value.Create(appendImgGalleryRespBodySchema);
 
-      const gallery = await GalleryService.getGalleryById(params.id);
+      const gallery = await getGalleryByIdFromDB({ id: params.id });
       if (!gallery) {
         resp.base.msg = MSG_GALLERY_NOT_FOUND;
         return resp;
@@ -106,12 +141,23 @@ export const galleriesRoute = new Elysia({ prefix: "/v1/galleries" })
         return resp;
       }
 
-      await ImgService.appendImgToGallery({
+      await appendImgToGallery({
         galleryId: params.id,
         urls: body.urls,
       });
 
+      const imgs = await getImgsByGalleryId({ galleryId: params.id });
+
       resp.base.success = true;
+
+      resp.data.gallery.id = gallery.id;
+      resp.data.gallery.userId = gallery.userId;
+      resp.data.gallery.name = gallery.name;
+      resp.data.gallery.description = gallery.description;
+      resp.data.gallery.createdAt = gallery.createdAt.getTime();
+      resp.data.gallery.updatedAt = gallery.updatedAt.getTime();
+      resp.data.imgs = imgs;
+
       return resp;
     },
     {
