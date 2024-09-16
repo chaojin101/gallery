@@ -19,9 +19,9 @@ import {
 } from "test-tools/galleries";
 import { randomImgUrls } from "test-tools/img";
 import { randomUser } from "test-tools/users";
-import { gallerySchema } from "types/routes/galleries";
+import { galleryWithImgsSchema } from "types/routes/galleries";
 
-describe("POST /api/v1/galleries: add gallery", async () => {
+describe("POST /api/v1/galleries - add gallery", async () => {
   it("success", async () => {
     const user = await randomUser();
 
@@ -72,13 +72,6 @@ describe("POST /api/v1/galleries: add gallery", async () => {
 
       expect(data.base.success).toBe(false);
       expect(data.base.msg).toBe(MSG_UNAUTHENTICATED);
-
-      expect(data.data.gallery.id).toBe("");
-      expect(data.data.gallery.name).toBe("");
-      expect(data.data.gallery.description).toBe("");
-      expect(data.data.gallery.userId).toBe("");
-      expect(data.data.gallery.createdAt).toBe(0);
-      expect(data.data.gallery.updatedAt).toBe(0);
     }
   });
 
@@ -125,7 +118,7 @@ describe("POST /api/v1/galleries/:id/append: append images to gallery", async ()
     expect(data?.data.gallery.createdAt).toBe(gallery.createdAt);
     expect(data?.data.gallery.updatedAt).toBe(gallery.updatedAt);
 
-    expect(data?.data.imgs.length).toBe(urls.length);
+    expect(data?.data.gallery.imgs.length).toBe(urls.length);
 
     const imgs = await getImgsByGalleryId({ galleryId: gallery.id });
     for (let i = 0; i < urls.length; i++) {
@@ -203,11 +196,11 @@ describe("GET /api/v1/galleries/:id: get gallery by id", async () => {
     expect(data?.data.gallery.userId).toBe(gallery.userId);
     expect(data?.data.gallery.createdAt).toBe(gallery.createdAt);
 
-    expect(data?.data.imgs.length).toBe(0);
+    expect(data?.data.gallery.imgs.length).toBe(0);
   });
 
   it("success: with imgs", async () => {
-    const { gallery, imgs } = await randomGalleryWithImg();
+    const gallery = await randomGalleryWithImg();
 
     const { data, error } = await TestClient.api.v1
       .galleries({ id: gallery.id })
@@ -223,10 +216,10 @@ describe("GET /api/v1/galleries/:id: get gallery by id", async () => {
     expect(data?.data.gallery.userId).toBe(gallery.userId);
     expect(data?.data.gallery.createdAt).toBe(gallery.createdAt);
 
-    expect(data?.data.imgs.length).toBe(imgs.length);
-    for (let i = 0; i < imgs.length; i++) {
-      expect(data?.data.imgs[i].id).toBe(imgs[i].id);
-      expect(data?.data.imgs[i].url).toBe(imgs[i].url);
+    expect(data?.data.gallery.imgs.length).toBe(gallery.imgs.length);
+    for (let i = 0; i < gallery.imgs.length; i++) {
+      expect(data?.data.gallery.imgs[i].id).toBe(gallery.imgs[i].id);
+      expect(data?.data.gallery.imgs[i].url).toBe(gallery.imgs[i].url);
     }
   });
 
@@ -244,10 +237,10 @@ describe("GET /api/v1/galleries/:id: get gallery by id", async () => {
 describe("GET /api/v1/galleries/latest: get latest galleries", async () => {
   it("success", async () => {
     const count = randomInt();
-    const galleries: Static<typeof gallerySchema>[] = [];
+    const galleries: Static<typeof galleryWithImgsSchema>[] = [];
     const user = await randomUser();
     for (let i = 0; i < count; i++) {
-      const gallery = await randomGallery({ token: user.token });
+      const gallery = await randomGalleryWithImg({ token: user.token });
       galleries.push(gallery);
     }
     galleries.reverse();
@@ -262,8 +255,8 @@ describe("GET /api/v1/galleries/latest: get latest galleries", async () => {
 
     expect(data?.data.galleries.length).toBe(count);
     for (let i = 0; i < count; i++) {
-      expect(data?.data.galleries[i].galleryId).toBe(galleries[i].id);
-      expect(data?.data.galleries[i].firstImgUrl).not.toBe("");
+      expect(data?.data.galleries[i].id).toBe(galleries[i].id);
+      expect(data?.data.galleries[i].imgs.length).toBe(1);
     }
   });
 });

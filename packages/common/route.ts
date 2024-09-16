@@ -21,8 +21,13 @@ export const MSG_EMAIL_EXISTS = "Email already exists";
 // POST /api/v1/user/sign-in
 export const MSG_INVALID_EMAIL_OR_PASSWORD = "Invalid email or password";
 
-// POST /api/v1/gallery
+// POST /api/v1/galleries
 export const MSG_GALLERY_NAME_EXIST = "Gallery name already exists";
 
-// POST /api/v1/gallery/:galleryId/append
+// POST /api/v1/galleries/:galleryId/append
 export const MSG_GALLERY_NOT_FOUND = "Gallery not found";
+
+// POST /api/v1/collections
+export const MSG_COLLECTION_NAME_EXIST = "collection name already exists";
+
+export const MSG_COLLECTION_NOT_FOUND = "Collection not found";

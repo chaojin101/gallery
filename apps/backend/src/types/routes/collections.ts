@@ -4,9 +4,21 @@ import {
   COLLECTION_NAME_MAX_LENGTH,
   COLLECTION_NAME_MIN_LENGTH,
 } from "@gallery/common";
+import { createSelectSchema } from "drizzle-typebox";
 import { t } from "elysia";
 import { baseRespSchema } from ".";
-import { collectionSchema } from "../../db/schema";
+import { collection } from "../../db/schema";
+import { imgSchema } from "./imgs";
+
+export const collectionSchema = createSelectSchema(collection, {
+  createdAt: t.Number(),
+  updatedAt: t.Number(),
+});
+
+export const collectionWithImgsSchema = t.Intersect([
+  collectionSchema,
+  t.Object({ imgs: t.Array(imgSchema) }),
+]);
 
 export const addCollectionReqBodySchema = t.Object({
   name: t.String({
@@ -21,30 +33,32 @@ export const addCollectionReqBodySchema = t.Object({
 
 export const addCollectionRespBodySchema = t.Object({
   base: baseRespSchema,
-  collection: collectionSchema,
+  data: t.Object({ collection: collectionSchema }),
 });
 
 export const getAddCollectionCardRespBodySchema = t.Object({
   base: baseRespSchema,
   data: t.Object({
     collections: t.Array(
-      t.Object({
-        id: t.String(),
-        name: t.String(),
-        amount: t.Number(),
-      })
+      t.Intersect([
+        collectionSchema,
+        t.Object({ amount: t.Number() }),
+        t.Object({ imgs: t.Array(imgSchema) }),
+      ])
     ),
   }),
 });
 
 export const appendToCollectionReqBodySchema = t.Object({
-  amount: t.Number(),
   collectionId: t.String(),
   imgIds: t.Array(t.String()),
 });
 
 export const appendToCollectionRespBodySchema = t.Object({
   base: baseRespSchema,
+  data: t.Object({
+    collection: collectionWithImgsSchema,
+  }),
 });
 
 export const getLatestCollectionsReqQuerySchema = t.Object({
@@ -56,24 +70,13 @@ export const getLatestCollectionsRespBodySchema = t.Object({
   base: baseRespSchema,
   data: t.Object({
     totalCount: t.Number(),
-    collections: t.Array(
-      t.Object({
-        id: t.String(),
-        imgUrl: t.String(),
-      })
-    ),
+    collections: t.Array(collectionWithImgsSchema),
   }),
 });
 
 export const getCollectionByIdRespBodySchema = t.Object({
   base: baseRespSchema,
   data: t.Object({
-    collection: t.Object({
-      name: t.String(),
-      imgs: t.Array(t.Object({ id: t.String(), url: t.String() })),
-    }),
+    collection: collectionWithImgsSchema,
   }),
 });
-
-export const MSG_COLLECTION_NAME_EXIST = "collection name already exists";
-export const MSG_COLLECTION_NOT_FOUND = "collection not found";

@@ -1,6 +1,6 @@
 import { asc, desc, eq } from "drizzle-orm";
 import { defaultDb } from "..";
-import { gallery, galleryImg } from "../schema";
+import { collectionImg, gallery, galleryImg, img } from "../schema";
 import { getNextImgOrderByGalleryId } from "./galleryImg";
 import { addImgs } from "./img";
 
@@ -44,21 +44,32 @@ export const getLastestGallery = async (options: {
 }) => {
   const { offset, limit } = options;
 
-  const galleries = await defaultDb.query.gallery.findMany({
-    columns: { id: true },
-    orderBy: [desc(gallery.createdAt)],
-    offset: offset,
-    limit: limit,
+  const rows = await defaultDb
+    .select()
+    .from(gallery)
+    .innerJoin(galleryImg, eq(gallery.id, galleryImg.galleryId))
+    .innerJoin(img, eq(galleryImg.imgId, img.id))
+    .where(eq(galleryImg.order, 0))
+    .orderBy(desc(gallery.createdAt))
+    .offset(offset)
+    .limit(limit);
+
+  return rows;
+};
+
+export const getImgsByCollectionId = async (options: {
+  collectionId: string;
+}) => {
+  const { collectionId } = options;
+
+  const r = await defaultDb.query.collectionImg.findMany({
+    columns: {},
+    where: eq(collectionImg.collectionId, collectionId),
+    orderBy: [asc(collectionImg.order)],
     with: {
-      galleryImgs: {
-        columns: {},
-        orderBy: [asc(galleryImg.order)],
-        limit: 1,
-        with: {
-          img: true,
-        },
-      },
+      img: true,
     },
   });
-  return galleries;
+
+  return r.map((img) => img.img);
 };

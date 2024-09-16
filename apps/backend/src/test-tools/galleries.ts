@@ -98,10 +98,7 @@ export const randomGalleryWithImg = async (
     throw new Error("randomGalleryWithImg: Failed to call apiAppendGallery");
   }
 
-  return {
-    gallery,
-    imgs: appendedData.data.imgs,
-  };
+  return appendedData.data.gallery;
 };
 
 export const apiAppendGallery = async (options: {

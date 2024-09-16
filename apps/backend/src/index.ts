@@ -13,6 +13,9 @@ const myLogger = logger({
   transport: {
     target: "pino-pretty",
   },
+  autoLogging: {
+    ignore: () => process.env.NODE_ENV === "test",
+  },
 });
 
 export const app = new Elysia({ prefix: "/api" })

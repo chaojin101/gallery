@@ -8,7 +8,6 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
-import { createSelectSchema } from "drizzle-typebox";
 
 export const user = pgTable("user", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -124,7 +123,6 @@ export const collection = pgTable("collection", {
     .defaultNow(),
 });
 export type Collection = typeof collection.$inferSelect;
-export const collectionSchema = createSelectSchema(collection);
 
 export const collectionRelations = relations(collection, ({ one, many }) => ({
   user: one(user, {

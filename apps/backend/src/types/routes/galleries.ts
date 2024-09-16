@@ -7,7 +7,8 @@ import {
 import { createSelectSchema } from "drizzle-typebox";
 import { t } from "elysia";
 import { baseRespSchema } from ".";
-import { gallery, img } from "../../db/schema";
+import { gallery } from "../../db/schema";
+import { imgSchema } from "./imgs";
 
 const galleryNameSchema = t.String({
   minLength: GALLERY_NAME_MIN_LENGTH,
@@ -23,6 +24,11 @@ export const gallerySchema = createSelectSchema(gallery, {
   updatedAt: t.Number(),
 });
 
+export const galleryWithImgsSchema = t.Intersect([
+  gallerySchema,
+  t.Object({ imgs: t.Array(imgSchema) }),
+]);
+
 export const addGalleryReqBodySchema = t.Object({
   name: galleryNameSchema,
   description: galleryDescriptionSchema,
@@ -33,20 +39,22 @@ export const addGalleryRespBodySchema = t.Object({
   data: t.Object({ gallery: gallerySchema }),
 });
 
-export const imgSchema = createSelectSchema(img);
-
 export const appendImgToGalleryReqBodySchema = t.Object({
   urls: t.Array(t.String({ minLength: 1, maxLength: 2000, format: "uri" })),
 });
 
 export const appendImgGalleryRespBodySchema = t.Object({
   base: baseRespSchema,
-  data: t.Object({ gallery: gallerySchema, imgs: t.Array(imgSchema) }),
+  data: t.Object({
+    gallery: galleryWithImgsSchema,
+  }),
 });
 
 export const getGalleryByIdRespBodySchema = t.Object({
   base: baseRespSchema,
-  data: t.Object({ gallery: gallerySchema, imgs: t.Array(imgSchema) }),
+  data: t.Object({
+    gallery: galleryWithImgsSchema,
+  }),
 });
 
 export const getLatestGalleriesReqQuerySchema = t.Object({
@@ -58,11 +66,6 @@ export const getLatestGalleriesRespBodySchema = t.Object({
   base: baseRespSchema,
   data: t.Object({
     totalCount: t.Number(),
-    galleries: t.Array(
-      t.Object({
-        galleryId: t.String(),
-        firstImgUrl: t.String(),
-      })
-    ),
+    galleries: t.Array(galleryWithImgsSchema),
   }),
 });

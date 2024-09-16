@@ -2,7 +2,7 @@ import jwt from "@elysiajs/jwt";
 import { MSG_UNAUTHENTICATED } from "@gallery/common";
 import { Value } from "@sinclair/typebox/value";
 import Elysia from "elysia";
-import { addGalleryRespBodySchema } from "types/routes/galleries";
+import { baseRespSchema } from "types/routes";
 import { JWTPayloadSchema } from "./types/routes/users";
 
 export const JWTPlugin = jwt({
@@ -31,10 +31,10 @@ export const authPlugin = new Elysia()
     const tokenPayload = await jwt.verify(bearer);
 
     if (!tokenPayload) {
-      const resp = Value.Create(addGalleryRespBodySchema);
-      resp.base.success = false;
-      resp.base.msg = MSG_UNAUTHENTICATED;
-      throw error(200, resp);
+      const resp = Value.Create(baseRespSchema);
+      resp.success = false;
+      resp.msg = MSG_UNAUTHENTICATED;
+      throw error(200, { base: resp });
     }
 
     return { tokenPayload };

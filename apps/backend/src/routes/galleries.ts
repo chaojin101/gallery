@@ -16,7 +16,6 @@ import {
   getGalleryByNameFromDB,
   getTotalGalleryAmount,
 } from "../db/sqls/gallery";
-import { IMG_PLACEHOLDER_URL } from "../db/sqls/img";
 import { authPlugin } from "../plugins";
 import { authHeaderSchema } from "../types/routes/auth";
 import {
@@ -53,7 +52,7 @@ export const galleriesRoute = new Elysia({ prefix: "/v1/galleries" })
       resp.data.gallery.description = gallery.description;
       resp.data.gallery.createdAt = gallery.createdAt.getTime();
       resp.data.gallery.updatedAt = gallery.updatedAt.getTime();
-      resp.data.imgs = imgs;
+      resp.data.gallery.imgs = imgs;
 
       return resp;
     },
@@ -67,7 +66,7 @@ export const galleriesRoute = new Elysia({ prefix: "/v1/galleries" })
       const { limit = 10, page = 1 } = query;
       const resp = Value.Create(getLatestGalleriesRespBodySchema);
 
-      const galleries = await getLastestGallery({
+      const rows = await getLastestGallery({
         offset: (page - 1) * limit,
         limit: limit,
       });
@@ -75,10 +74,12 @@ export const galleriesRoute = new Elysia({ prefix: "/v1/galleries" })
 
       resp.base.success = true;
 
-      resp.data.galleries = galleries.map((gallery) => {
+      resp.data.galleries = rows.map((row) => {
         return {
-          galleryId: gallery.id,
-          firstImgUrl: gallery.galleryImgs[0]?.img?.url || IMG_PLACEHOLDER_URL,
+          ...row.gallery,
+          createdAt: row.gallery.createdAt.getTime(),
+          updatedAt: row.gallery.updatedAt.getTime(),
+          imgs: [row.img],
         };
       });
       return resp;
@@ -88,81 +89,85 @@ export const galleriesRoute = new Elysia({ prefix: "/v1/galleries" })
       response: getLatestGalleriesRespBodySchema,
     }
   )
-
-  .use(authPlugin)
-  .post(
-    "",
-    async ({ body, tokenPayload }) => {
-      const resp = Value.Create(addGalleryRespBodySchema);
-
-      let gallery = await getGalleryByNameFromDB({
-        name: body.name,
-      });
-      if (gallery) {
-        resp.base.msg = MSG_GALLERY_NAME_EXIST;
-        return resp;
-      }
-
-      gallery = await addGalleryToDB({
-        ...body,
-        userId: tokenPayload.userId,
-      });
-
-      resp.base.success = true;
-
-      resp.data.gallery.id = gallery.id;
-      resp.data.gallery.userId = gallery.userId;
-      resp.data.gallery.name = gallery.name;
-      resp.data.gallery.description = gallery.description;
-      resp.data.gallery.createdAt = gallery.createdAt.getTime();
-      resp.data.gallery.updatedAt = gallery.updatedAt.getTime();
-
-      return resp;
-    },
+  .guard(
     {
       headers: authHeaderSchema,
-      body: addGalleryReqBodySchema,
-      response: addGalleryRespBodySchema,
-    }
-  )
-  .post(
-    "/:id/append",
-    async ({ params, body, tokenPayload }) => {
-      const resp = Value.Create(appendImgGalleryRespBodySchema);
-
-      const gallery = await getGalleryByIdFromDB({ id: params.id });
-      if (!gallery) {
-        resp.base.msg = MSG_GALLERY_NOT_FOUND;
-        return resp;
-      }
-
-      if (gallery.userId !== tokenPayload.userId) {
-        resp.base.msg = MSG_UNAUTHORIZED;
-        return resp;
-      }
-
-      await appendImgToGallery({
-        galleryId: params.id,
-        urls: body.urls,
-      });
-
-      const imgs = await getImgsByGalleryId({ galleryId: params.id });
-
-      resp.base.success = true;
-
-      resp.data.gallery.id = gallery.id;
-      resp.data.gallery.userId = gallery.userId;
-      resp.data.gallery.name = gallery.name;
-      resp.data.gallery.description = gallery.description;
-      resp.data.gallery.createdAt = gallery.createdAt.getTime();
-      resp.data.gallery.updatedAt = gallery.updatedAt.getTime();
-      resp.data.imgs = imgs;
-
-      return resp;
     },
-    {
-      headers: authHeaderSchema,
-      body: appendImgToGalleryReqBodySchema,
-      response: appendImgGalleryRespBodySchema,
-    }
+    (app) =>
+      app
+        .use(authPlugin)
+        .post(
+          "",
+          async ({ body, tokenPayload }) => {
+            const resp = Value.Create(addGalleryRespBodySchema);
+
+            let gallery = await getGalleryByNameFromDB({
+              name: body.name,
+            });
+            if (gallery) {
+              resp.base.msg = MSG_GALLERY_NAME_EXIST;
+              return resp;
+            }
+
+            gallery = await addGalleryToDB({
+              ...body,
+              userId: tokenPayload.userId,
+            });
+
+            resp.base.success = true;
+
+            resp.data.gallery.id = gallery.id;
+            resp.data.gallery.userId = gallery.userId;
+            resp.data.gallery.name = gallery.name;
+            resp.data.gallery.description = gallery.description;
+            resp.data.gallery.createdAt = gallery.createdAt.getTime();
+            resp.data.gallery.updatedAt = gallery.updatedAt.getTime();
+
+            return resp;
+          },
+          {
+            body: addGalleryReqBodySchema,
+            response: addGalleryRespBodySchema,
+          }
+        )
+        .post(
+          "/:id/append",
+          async ({ params, body, tokenPayload }) => {
+            const resp = Value.Create(appendImgGalleryRespBodySchema);
+
+            const gallery = await getGalleryByIdFromDB({ id: params.id });
+            if (!gallery) {
+              resp.base.msg = MSG_GALLERY_NOT_FOUND;
+              return resp;
+            }
+
+            if (gallery.userId !== tokenPayload.userId) {
+              resp.base.msg = MSG_UNAUTHORIZED;
+              return resp;
+            }
+
+            await appendImgToGallery({
+              galleryId: params.id,
+              urls: body.urls,
+            });
+
+            const imgs = await getImgsByGalleryId({ galleryId: params.id });
+
+            resp.base.success = true;
+
+            resp.data.gallery.id = gallery.id;
+            resp.data.gallery.userId = gallery.userId;
+            resp.data.gallery.name = gallery.name;
+            resp.data.gallery.description = gallery.description;
+            resp.data.gallery.createdAt = gallery.createdAt.getTime();
+            resp.data.gallery.updatedAt = gallery.updatedAt.getTime();
+            resp.data.gallery.imgs = imgs;
+
+            return resp;
+          },
+          {
+            body: appendImgToGalleryReqBodySchema,
+            response: appendImgGalleryRespBodySchema,
+          }
+        )
   );

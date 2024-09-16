@@ -1,6 +1,6 @@
 import { count, eq } from "drizzle-orm";
 import { defaultDb } from "..";
-import { gallery } from "../schema";
+import { gallery, galleryImg } from "../schema";
 
 export const getGalleryByNameFromDB = async (options: { name: string }) => {
   const { name } = options;
@@ -19,7 +19,10 @@ export const getGalleryByIdFromDB = async (options: { id: string }) => {
 };
 
 export const getTotalGalleryAmount = async () => {
-  const result = await defaultDb.select({ count: count() }).from(gallery);
+  const result = await defaultDb
+    .select({ count: count() })
+    .from(gallery)
+    .innerJoin(galleryImg, eq(gallery.id, galleryImg.galleryId));
 
   return result[0].count;
 };
