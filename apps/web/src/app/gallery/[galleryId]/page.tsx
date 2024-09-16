@@ -31,12 +31,12 @@ const Page = () => {
   const [isSingleImgView, setIsSingleImgView] = useState(false);
 
   const { checkboxes, toggleCheckbox } = useCheckboxes({
-    count: q.data?.data?.imgs.length || 0,
+    count: q.data?.data?.data.gallery.imgs.length || 0,
   });
 
   const selectedImgIds = checkboxes
     .map((checked, index) =>
-      checked ? q.data?.data?.imgs[index].id : undefined
+      checked ? q.data?.data?.data.gallery.imgs[index].id : undefined
     )
     .filter((id) => id !== undefined);
 
@@ -78,7 +78,8 @@ const Page = () => {
     <>
       <div className="grid gap-2">
         <h1 className="pt-2">
-          {q.data?.data?.gallery.name} {` (${q.data?.data?.imgs.length}) `}
+          {q.data?.data?.data.gallery.name}{" "}
+          {` (${q.data?.data?.data.gallery.imgs.length}) `}
         </h1>
 
         <section className="flex gap-2">
@@ -97,7 +98,7 @@ const Page = () => {
         </section>
 
         <section className="grid-container">
-          {q.data?.data?.imgs.map((img, index) => (
+          {q.data?.data?.data.gallery.imgs.map((img, index) => (
             <div
               key={img.id}
               className="relative aspect-[3/4] cursor-pointer  hover:scale-[1.01] transition-all"
@@ -133,7 +134,7 @@ const Page = () => {
         <SingleImg
           curImgIndex={curImgIndex}
           setCurImgIndex={setCurImgIndex}
-          imgUrls={q.data?.data?.imgs.map((img) => img.url) || []}
+          imgUrls={q.data?.data?.data.gallery.imgs.map((img) => img.url) || []}
           handleClose={() => setIsSingleImgView(false)}
           TopBar={
             selectImgToCollectionStatus >=

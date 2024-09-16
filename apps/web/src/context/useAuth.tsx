@@ -16,7 +16,7 @@ const LOCALSTORE_TOKEN_KEY = "token";
 type JWTState = JWTPayload & jwt.Jwt;
 
 type AuthHeader = {
-  authorization: string;
+  Authorization: string;
 };
 
 type AuthContextType = {
@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     const tokenPayload = decodeToken(token);
-    setAuthHeader({ authorization: `Bearer ${token}` });
+    setAuthHeader({ Authorization: `Bearer ${token}` });
     setTokenPayload(tokenPayload);
     setIsReady(true);
   }, []);
@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const setAuthToken = (token: string) => {
     localStorage.setItem(LOCALSTORE_TOKEN_KEY, token);
     const tokenPayload = decodeToken(token);
-    setAuthHeader({ authorization: `Bearer ${token}` });
+    setAuthHeader({ Authorization: `Bearer ${token}` });
     setTokenPayload(tokenPayload);
   };
 

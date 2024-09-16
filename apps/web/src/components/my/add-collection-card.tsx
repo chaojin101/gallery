@@ -17,8 +17,8 @@ export const AddCollectionCard = (props: Props) => {
   const q = useQuery({
     queryKey: [QUERY_KEY.ADD_COLLECTION_CARD],
     queryFn: async () => {
-      return await backend.api.v1.collections.addCollectionCard.get({
-        headers: authHeader || { authorization: "" },
+      return await backend.api.v1.collections.currentUser.get({
+        headers: authHeader || { Authorization: "" },
       });
     },
   });
@@ -29,9 +29,9 @@ export const AddCollectionCard = (props: Props) => {
       collectionId: string;
       imgIds: string[];
     }) => {
-      return await backend.api.v1.collections.appendToCollection.post(
+      return await backend.api.v1.collections.append.post(
         { ...options },
-        { headers: authHeader || { authorization: "" } }
+        { headers: authHeader || { Authorization: "" } }
       );
     },
   });

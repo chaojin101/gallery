@@ -42,7 +42,7 @@ const Page = () => {
             <div className="aspect-[3/4]">
               <img
                 className="object-cover w-full h-full"
-                src={c.imgUrl}
+                src={c.imgs[0].url}
                 alt=""
               />
             </div>
