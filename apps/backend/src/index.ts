@@ -29,7 +29,7 @@ export const app = new Elysia({ prefix: "/api" })
   .use(galleriesRoute)
   .use(collectionsRoute)
   .get("", ({}) => "Hello, world!")
-  .listen(process.env.PORT);
+  .listen(process.env.PORT!);
 
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`

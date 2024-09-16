@@ -1,4 +1,5 @@
 import {
+  authHeaderSchema,
   MSG_GALLERY_NAME_EXIST,
   MSG_GALLERY_NOT_FOUND,
   MSG_UNAUTHORIZED,
@@ -17,7 +18,6 @@ import {
   getTotalGalleryAmount,
 } from "../db/sqls/gallery";
 import { authPlugin } from "../plugins";
-import { authHeaderSchema } from "../types/routes/auth";
 import {
   addGalleryReqBodySchema,
   addGalleryRespBodySchema,

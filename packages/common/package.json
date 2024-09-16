@@ -4,12 +4,17 @@
   "type": "module",
   "version": "0.0.1",
   "exports": {
-    ".": "./index.ts"
+    ".": "./index.ts",
+    "./lib/*": "./lib/*.ts",
+    "./lib/type/route/*": "./lib/type/route/*.ts"
   },
   "devDependencies": {
     "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "elysia": "^1.1.12"
   }
 }

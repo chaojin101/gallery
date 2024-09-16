@@ -83,7 +83,7 @@ const Page = () => {
         </h1>
 
         <section className="flex gap-2">
-          {tokenPayload && (
+          {tokenPayload.email !== "" && (
             <Button onClick={toggleSelectImgToCollection}>
               Select imgs to collection
             </Button>

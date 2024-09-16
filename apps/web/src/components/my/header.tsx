@@ -1,3 +1,5 @@
+"use client";
+
 import { useAuth } from "@/context/useAuth";
 import Link from "next/link";
 
@@ -11,7 +13,7 @@ export const Header = () => {
           href={"/"}
           className="font-bold text-2xl cursor-pointer hover:scale-[1.05] transition-all"
         >
-          GirlIndex
+          Girli
         </Link>
 
         <div className="ml-auto flex items-center gap-4">

@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/context/useAuth";
-import { SignReqSchema } from "@gallery/backend";
+import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from "@gallery/common";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -106,10 +106,7 @@ export default function Page() {
 
 const loginSchema = z.object({
   email: z.string().email(),
-  password: z
-    .string()
-    .min(SignReqSchema.properties.password.minLength ?? 6)
-    .max(SignReqSchema.properties.password.maxLength ?? 20),
+  password: z.string().min(PASSWORD_MIN_LENGTH).max(PASSWORD_MAX_LENGTH),
 });
 
 type LoginInputs = z.infer<typeof loginSchema>;

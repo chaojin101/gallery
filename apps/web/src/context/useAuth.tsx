@@ -1,8 +1,9 @@
 "use client";
 
-import { decodeToken } from "@/lib/utils";
-import { JWTPayload } from "@gallery/backend";
-import jwt from "jsonwebtoken";
+import { authHeaderSchema } from "@gallery/common";
+import { JWT, JWTPayloadSchema } from "@gallery/common/lib/jwt";
+import { Value } from "@sinclair/typebox/value";
+import { Static } from "elysia";
 import {
   createContext,
   ReactNode,
@@ -13,51 +14,52 @@ import {
 
 const LOCALSTORE_TOKEN_KEY = "token";
 
-type JWTState = JWTPayload & jwt.Jwt;
+type TokenPayload = Static<typeof JWTPayloadSchema>;
 
-type AuthHeader = {
-  Authorization: string;
-};
+type AuthHeader = Static<typeof authHeaderSchema>;
 
 type AuthContextType = {
-  tokenPayload: JWTState | null;
-  authHeader: AuthHeader | null;
+  tokenPayload: TokenPayload;
+  authHeader: AuthHeader;
   setAuthToken: (token: string) => void;
-  setTokenPayload: (payload: JWTState) => void;
   logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [authHeader, setAuthHeader] = useState<AuthHeader | null>(null);
-  const [tokenPayload, setTokenPayload] = useState<JWTState | null>(null);
-  const [isReady, setIsReady] = useState(false);
+  const [authHeader, setAuthHeader] = useState<AuthHeader>(
+    Value.Create(authHeaderSchema)
+  );
+  const [tokenPayload, setTokenPayload] = useState<TokenPayload>(
+    Value.Create(JWTPayloadSchema)
+  );
 
   useEffect(() => {
     const token = localStorage.getItem(LOCALSTORE_TOKEN_KEY);
     if (!token) {
-      setIsReady(true);
       return;
     }
 
-    const tokenPayload = decodeToken(token);
     setAuthHeader({ Authorization: `Bearer ${token}` });
+
+    const tokenPayload = JWT.decode({ token });
     setTokenPayload(tokenPayload);
-    setIsReady(true);
   }, []);
 
   const setAuthToken = (token: string) => {
     localStorage.setItem(LOCALSTORE_TOKEN_KEY, token);
-    const tokenPayload = decodeToken(token);
+
     setAuthHeader({ Authorization: `Bearer ${token}` });
+
+    const tokenPayload = JWT.decode({ token });
     setTokenPayload(tokenPayload);
   };
 
   const logout = () => {
     localStorage.removeItem(LOCALSTORE_TOKEN_KEY);
-    setAuthHeader(null);
-    setTokenPayload(null);
+    setAuthHeader(Value.Create(authHeaderSchema));
+    setTokenPayload(Value.Create(JWTPayloadSchema));
   };
 
   return (
@@ -65,12 +67,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       value={{
         authHeader,
         tokenPayload,
-        setTokenPayload,
         setAuthToken,
         logout,
       }}
     >
-      {isReady && children}
+      {children}
     </AuthContext.Provider>
   );
 };

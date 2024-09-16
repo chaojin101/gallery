@@ -5,7 +5,6 @@ declare global {
       PORT: string;
       DATABASE_URL: string;
       JWT_SECRET: string;
-      PORT?: string;
       PWD: string;
     }
   }

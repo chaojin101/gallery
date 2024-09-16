@@ -68,6 +68,23 @@
   }
 }
 
+/* outermost-wrapper */
+.outermost-wrapper {
+  @apply max-w-[320px];
+}
+
+@media (min-width: 630px) {
+  .outermost-wrapper {
+    @apply max-w-[630px];
+  }
+}
+
+@media (min-width: 940px) {
+  .outermost-wrapper {
+    @apply max-w-[940px];
+  }
+}
+
 .grid-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));

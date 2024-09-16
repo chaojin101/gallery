@@ -2,9 +2,9 @@ import {
   MSG_EMAIL_EXISTS,
   MSG_INVALID_EMAIL_OR_PASSWORD,
 } from "@gallery/common";
+import { JWT } from "@gallery/common/lib/jwt";
 import { describe, expect, it } from "bun:test";
 import { getUserByEmailFromDB } from "db/sqls/user";
-import { JWT } from "libs/jwt";
 import {
   apiSignIn,
   apiSignUp,
@@ -33,7 +33,10 @@ describe("POST /api/v1/users/sign-up", () => {
     expect(data.base.success).toBe(true);
     expect(data.base.msg).toEqual("");
 
-    const payload = JWT.verify({ token: data.data.token });
+    const payload = JWT.verify({
+      token: data.data.token,
+      secret: process.env.JWT_SECRET!,
+    });
     expect(payload.email).toBe(userDB.email);
     expect(payload.userId).toBe(userDB.id);
     expect(payload.name).toBe(userDB.name);
@@ -89,7 +92,10 @@ describe("POST /api/v1/users/sign-in", () => {
     expect(data.base.success).toBe(true);
     expect(data.base.msg).toEqual("");
 
-    const payload = JWT.verify({ token: data.data.token });
+    const payload = JWT.verify({
+      token: data.data.token,
+      secret: process.env.JWT_SECRET!,
+    });
     expect(payload.email).toBe(user.email);
     expect(payload.userId).toBe(user.id);
     expect(payload.name).toBe(user.name);

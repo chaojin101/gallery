@@ -1,4 +1,5 @@
 import {
+  authHeaderSchema,
   MSG_COLLECTION_NAME_EXIST,
   MSG_COLLECTION_NOT_FOUND,
   MSG_UNAUTHORIZED,
@@ -18,7 +19,6 @@ import {
 import { appendToCollection } from "../db/sqls/collectionImg";
 import { imgPlaceHolder } from "../db/sqls/img";
 import { authPlugin } from "../plugins";
-import { authHeaderSchema } from "../types/routes/auth";
 import {
   addCollectionReqBodySchema,
   addCollectionRespBodySchema,
