@@ -4,6 +4,7 @@ import { backend } from "@/backend";
 import { SingleImg } from "@/components/my/single-img";
 
 import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
@@ -44,7 +45,7 @@ const Page = () => {
               key={img.id}
               className="relative aspect-[3/4] cursor-pointer  hover:scale-[1.01] transition-all"
             >
-              <img
+              <Image
                 onClick={() => {
                   setCurImgIndex(index);
                   setIsSingleImgView(true);

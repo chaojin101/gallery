@@ -13,6 +13,7 @@ import {
   useSelectImgToCollectionStepper,
 } from "@/use-hooks/use-select-img-to-collection-stepper";
 import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { useEventListener } from "usehooks-ts";
@@ -115,7 +116,7 @@ const Page = () => {
                 </div>
               )}
 
-              <img
+              <Image
                 onClick={() => {
                   setCurImgIndex(index);
                   setIsSingleImgView(true);

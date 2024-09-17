@@ -1,24 +1,26 @@
 import { treaty } from "@elysiajs/eden";
 import got from "got";
+import { app } from "index";
 import parse from "node-html-parser";
-import { app } from "../index";
-import { downloadAndUpload } from "./lib/upload";
+import { downloadAndUpload } from "../upload";
+import { Telegraph } from "./telegraph";
 
 export const backend = treaty<typeof app>("https://api.girli.xyz");
 
 const main = async () => {
-  const url = await downloadAndUpload({
-    imgUrl: "https://image.acg.lol/file/2024/09/14/1-45b9c69f2937de8891.jpg",
-  });
-  console.log(url);
+  const url = `
+https://telegra.ph/YeEunSidam-001-08-30
+`;
+  const t = await Telegraph.create({ url });
 
-  //   const url = `
-  // https://telegra.ph/Quan%E5%86%89%E6%9C%89%E7%82%B9%E9%A5%BF-%E7%BA%B3%E8%A5%BF%E5%A6%B2-46P-06-13
-  // `;
+  for (let i = 0; i < t.imgUrls.length; i++) {
+    console.log(`${t.name} - Downloading ${i + 1}/${t.imgUrls.length}...`);
+    const newImgUrl = await downloadAndUpload({ imgUrl: t.imgUrls[i] });
+    t.imgUrls[i] = newImgUrl;
+  }
+  // console.log(`t.imgUrls:`, t.imgUrls);
 
-  //   const { name, imgUrls } = await parseCosPlayNSFWTelegrahUrl({ url });
-
-  //   await addGallery({ name, urls: imgUrls });
+  await addGallery({ name: t.name, urls: t.imgUrls });
 
   process.exit(0);
 };
@@ -60,6 +62,7 @@ const addGallery = async (options: { name: string; urls: string[] }) => {
   );
   const gid = r2.data?.data.gallery.id;
   if (!gid) {
+    console.log(`r2.data: ${JSON.stringify(r2.data)}`);
     console.error("Failed to create gallery");
     process.exit(1);
   }

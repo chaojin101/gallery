@@ -1,5 +1,6 @@
 import { ANIMATION } from "@/lib/constant";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 import { Dispatch, SetStateAction, useRef } from "react";
 import {
   FullScreen,
@@ -95,7 +96,7 @@ export function SingleImg(props: props) {
     <section>
       <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black select-none">
         <div className="absolute top-0 left-0 w-full h-full flex flex-col py-2">
-          <img
+          <Image
             onClick={props.handleClose}
             className="object-contain w-full h-full"
             src={props.imgUrls[props.curImgIndex]}
@@ -132,14 +133,14 @@ export function SingleImg(props: props) {
               hidden: !fullScreenHandle.active,
             })}
           >
-            <img
+            <Image
               onClick={() => fullScreenHandle.exit()}
               className="object-contain w-full h-full"
               src={props.imgUrls[props.curImgIndex]}
               ref={imgRef}
               alt=""
             />
-            <img
+            <Image
               onClick={() => fullScreenHandle.exit()}
               className="hidden"
               src={props.imgUrls[getNextImgIndex(props.curImgIndex)]}

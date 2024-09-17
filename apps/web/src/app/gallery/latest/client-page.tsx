@@ -4,6 +4,7 @@ import { backend } from "@/backend";
 import { MyPagination } from "@/components/my/my-pagination";
 import { usePageSearchParams } from "@/use-hooks/use-page-search-params";
 import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
 import Link from "next/link";
 
 export const ClientPage = () => {
@@ -40,7 +41,7 @@ export const ClientPage = () => {
         {q.data?.data?.data.galleries.map((gallery) => (
           <Link href={`/gallery/${gallery.id}`} key={gallery.id}>
             <div className="aspect-[3/4]">
-              <img
+              <Image
                 className="object-cover w-full h-full"
                 src={gallery.imgs[0].url}
                 alt=""

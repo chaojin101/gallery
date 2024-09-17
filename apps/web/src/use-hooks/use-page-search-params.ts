@@ -19,7 +19,7 @@ export const usePageSearchParams = () => {
 
     const url = `${pathname}?${u.toString()}`;
     router.push(url);
-  }, [page, pathname]);
+  }, [page, pathname, router]);
 
   return { page, setPage };
 };

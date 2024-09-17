@@ -1,4 +1,4 @@
-import { app } from "./index";
+import { app } from "./app";
 
 type App = typeof app;
 
