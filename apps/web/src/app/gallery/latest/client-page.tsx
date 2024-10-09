@@ -6,6 +6,7 @@ import { usePageSearchParams } from "@/use-hooks/use-page-search-params";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect } from "react";
 
 export const ClientPage = () => {
   const pageLimit = 12;
@@ -27,6 +28,10 @@ export const ClientPage = () => {
     (q.data?.data?.data.totalCount || 0) / pageLimit
   );
 
+  useEffect(() => {
+    backend.api.v1.record.post();
+  }, []);
+
   if (q.isLoading) {
     return <div>Loading...</div>;
   }
@@ -45,6 +50,10 @@ export const ClientPage = () => {
                 className="object-cover w-full h-full"
                 src={gallery.imgs[0].url}
                 alt=""
+                width={300}
+                height={400}
+                loading="lazy"
+                priority={false}
               />
             </div>
           </Link>

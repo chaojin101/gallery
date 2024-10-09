@@ -54,6 +54,9 @@ const Page = () => {
                 src={img.url}
                 alt=""
                 loading="lazy"
+                width={300}
+                height={400}
+                priority={false}
               />
             </div>
           ))}

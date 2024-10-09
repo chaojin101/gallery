@@ -19,5 +19,5 @@ export const useCheckboxes = ({ count }: Props) => {
     setCheckboxes(newCheckboxes);
   };
 
-  return { checkboxes, toggleCheckbox };
+  return { checkboxes, setCheckboxes, toggleCheckbox };
 };

@@ -9,6 +9,7 @@
     "dev": "NODE_ENV=dev bun run --watch src/index.ts",
     "start": "NODE_ENV=prod bun src/index.ts",
     "migrate": "drizzle-kit push",
+    "drizzle-studio": "drizzle-kit studio --host 0.0.0.0 --port 3002",
     "script:index": "bun run src/scripts/index.ts"
   },
   "dependencies": {
@@ -36,7 +37,7 @@
     "@types/jsonwebtoken": "^9.0.6",
     "@types/pg": "^8.11.6",
     "bun-types": "latest",
-    "drizzle-kit": "^0.23.0",
+    "drizzle-kit": "^0.24.2",
     "got": "^14.4.2",
     "jsonwebtoken": "^9.0.2"
   },

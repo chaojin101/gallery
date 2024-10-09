@@ -45,6 +45,10 @@ export const ClientPage = () => {
                 className="object-cover w-full h-full"
                 src={c.imgs[0].url}
                 alt=""
+                width={300}
+                height={400}
+                loading="lazy"
+                priority={false}
               />
             </div>
           </Link>

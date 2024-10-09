@@ -31,7 +31,7 @@ const Page = () => {
   const [curImgIndex, setCurImgIndex] = useState(0);
   const [isSingleImgView, setIsSingleImgView] = useState(false);
 
-  const { checkboxes, toggleCheckbox } = useCheckboxes({
+  const { checkboxes, setCheckboxes, toggleCheckbox } = useCheckboxes({
     count: q.data?.data?.data.gallery.imgs.length || 0,
   });
 
@@ -92,9 +92,20 @@ const Page = () => {
 
           {selectImgToCollectionStatus >=
             SelectImgToCollectionStatus.selecting && (
-            <Button onClick={handleAddSelectedImgsToCollectionBtn}>
-              Add selected imgs to collection
-            </Button>
+            <>
+              <Button
+                onClick={() =>
+                  setCheckboxes(
+                    new Array(q.data?.data?.data.gallery.imgs.length).fill(true)
+                  )
+                }
+              >
+                Select All
+              </Button>
+              <Button onClick={handleAddSelectedImgsToCollectionBtn}>
+                Add selected imgs to collection
+              </Button>
+            </>
           )}
         </section>
 
@@ -124,7 +135,10 @@ const Page = () => {
                 className="object-cover w-full h-full"
                 src={img.url}
                 alt=""
+                width={300}
+                height={400}
                 loading="lazy"
+                priority={false}
               />
             </div>
           ))}

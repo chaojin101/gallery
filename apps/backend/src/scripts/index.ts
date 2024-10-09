@@ -1,26 +1,97 @@
-import { treaty } from "@elysiajs/eden";
+import fs from "fs";
 import got from "got";
 import parse from "node-html-parser";
-import { app } from "../index";
-import { downloadAndUpload } from "./lib/upload";
-
-export const backend = treaty<typeof app>("https://api.girli.xyz");
+import { addGallery } from "./lib";
+import { upload } from "./lib/upload";
 
 const main = async () => {
-  const url = await downloadAndUpload({
-    imgUrl: "https://image.acg.lol/file/2024/09/14/1-45b9c69f2937de8891.jpg",
-  });
-  console.log(url);
-
-  //   const url = `
-  // https://telegra.ph/Quan%E5%86%89%E6%9C%89%E7%82%B9%E9%A5%BF-%E7%BA%B3%E8%A5%BF%E5%A6%B2-46P-06-13
-  // `;
-
-  //   const { name, imgUrls } = await parseCosPlayNSFWTelegrahUrl({ url });
-
-  //   await addGallery({ name, urls: imgUrls });
-
+  await add_e6_1_to_gallery();
   process.exit(0);
+};
+
+const add_e6_1_to_gallery = async () => {
+  const folder = `./src/scripts/img-set/e6/e6-1`;
+  const files = fs.readdirSync(folder);
+
+  files.sort();
+
+  const imgUrls: string[] = [];
+
+  for (const file of files) {
+    const filePath = `${folder}/${file}`;
+    const url = await upload({ filename: filePath });
+
+    console.log(`Uploading ${file}`);
+
+    imgUrls.push(url);
+  }
+
+  const name = "糯美子-e6-1";
+  await addGallery({ name, urls: imgUrls });
+};
+
+const rename_e6_2_to_e6_5 = async () => {
+  const indexes = [3, 5];
+  for (let i of indexes) {
+    const folder = `./src/scripts/img-set/e6/e6-${i}`;
+    const files = fs.readdirSync(folder);
+
+    files.sort();
+
+    for (const file of files) {
+      const oldName = `${folder}/${file}`;
+      const newName = `${folder}/${file.split("_")[1].split(".")[0].padStart(5, "0")}.jpg`;
+
+      console.log(`oldName: ${oldName}`);
+      console.log(`newName: ${newName}`);
+
+      console.log();
+
+      fs.renameSync(oldName, newName);
+    }
+
+    // break;
+  }
+};
+
+const upload_e6_1 = async () => {
+  const folder = "./src/scripts/img-set/e6";
+  const files = fs.readdirSync(folder);
+
+  const imgUrls: string[] = [];
+
+  for (const file of files) {
+    const filePath = `${folder}/${file}`;
+    const url = await upload({ filename: filePath });
+
+    console.log(`Uploading ${filePath} to ${url}`);
+
+    imgUrls.push(url);
+  }
+
+  const name = "糯美子-e6";
+  await addGallery({ name, urls: imgUrls });
+
+  console.log("Done!");
+};
+
+const rename_e6_1 = async () => {
+  const folder = "./src/scripts/img-set/e6/e6-1";
+  const files = fs.readdirSync(folder);
+
+  files.sort();
+
+  for (const file of files) {
+    const oldName = `${folder}/${file}`;
+    const newName = `${folder}/${file.split(".")[0].padStart(5, "0")}.jpg`;
+
+    console.log(`oldName: ${oldName}`);
+    console.log(`newName: ${newName}`);
+
+    console.log();
+
+    // fs.renameSync(oldName, newName);
+  }
 };
 
 const parseCosPlayNSFWTelegrahUrl = async (options: { url: string }) => {
@@ -33,43 +104,6 @@ const parseCosPlayNSFWTelegrahUrl = async (options: { url: string }) => {
     .querySelectorAll("img")
     .map((img) => `https://telegra.ph${img.attributes.src}`);
   return { name, imgUrls };
-};
-
-const addGallery = async (options: { name: string; urls: string[] }) => {
-  const r1 = await backend.api.v1.users["sign-in"].post({
-    email: "chaojin101@gmail.com",
-    password: "111111",
-  });
-
-  const token = r1.data?.data.token;
-  if (!token) {
-    console.error("Failed to get token");
-    process.exit(1);
-  }
-
-  const r2 = await backend.api.v1.galleries.post(
-    {
-      name: options.name,
-      description: "",
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-  const gid = r2.data?.data.gallery.id;
-  if (!gid) {
-    console.error("Failed to create gallery");
-    process.exit(1);
-  }
-
-  const r3 = await backend.api.v1
-    .galleries({ id: gid })
-    .append.post(
-      { urls: options.urls },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
 };
 
 main();

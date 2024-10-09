@@ -39,7 +39,7 @@ export const upload = async (options: { filename: string }) => {
   formData.append("type", "file");
   formData.append("action", "upload");
   formData.append("timestamp", `${new Date().getTime()}`);
-  formData.append("auth_token", "d4ddb3d6136bd88274534ea8cf1837f9c90ce393");
+  formData.append("auth_token", "9fa68ba9d359c401660b7767a04c79d334b5e6f5");
   formData.append("expiration", "");
   formData.append("nsfw", "0");
   formData.append("mimetype", "image/png");

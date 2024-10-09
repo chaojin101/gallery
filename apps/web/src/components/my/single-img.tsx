@@ -102,6 +102,9 @@ export function SingleImg(props: props) {
             src={props.imgUrls[props.curImgIndex]}
             alt=""
             loading="lazy"
+            width={300}
+            height={400}
+            priority={false}
           />
         </div>
 
@@ -139,12 +142,20 @@ export function SingleImg(props: props) {
               src={props.imgUrls[props.curImgIndex]}
               ref={imgRef}
               alt=""
+              width={300}
+              height={400}
+              loading="lazy"
+              priority={false}
             />
             <Image
               onClick={() => fullScreenHandle.exit()}
               className="hidden"
               src={props.imgUrls[getNextImgIndex(props.curImgIndex)]}
               alt=""
+              width={300}
+              height={400}
+              loading="lazy"
+              priority={false}
             />
           </div>
         </FullScreen>
