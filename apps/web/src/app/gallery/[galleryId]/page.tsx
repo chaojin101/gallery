@@ -96,7 +96,9 @@ const Page = () => {
               <Button
                 onClick={() =>
                   setCheckboxes(
-                    new Array(q.data?.data?.data.gallery.imgs.length).fill(true)
+                    new Array(q.data?.data?.data.gallery.imgs.length).fill(
+                      !checkboxes[0]
+                    )
                   )
                 }
               >
